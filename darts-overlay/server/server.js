@@ -16,30 +16,48 @@ try {
   checkoutsTable = {};
 }
 
-// Game state
-let gameState = {
-  players: [
-    { name: 'Leikmaður 1', score: 501, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
-    { name: 'Leikmaður 2', score: 501, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
-  ],
-  firstTo: 3,
-  startScore: 501,
-  history: [],
-  gameOver: false,
-  winner: null
-};
+// Game state - now organized by room
+const rooms = new Map();
 
-let lastLegWinner = null;
-let lastSetWinner = null;
-let lastGameWinner = null;
-let nextLegStartPlayer = 1; // Track who goes first in next leg (0 or 1), alternates each leg
+// Create default initial game state
+function createInitialGameState() {
+  return {
+    players: [
+      { name: 'Leikmaður 1', score: 501, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
+      { name: 'Leikmaður 2', score: 501, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
+    ],
+    firstTo: 3,
+    startScore: 501,
+    history: [],
+    gameOver: false,
+    winner: null,
+    lastLegWinner: null,
+    lastSetWinner: null,
+    lastGameWinner: null,
+    nextLegStartPlayer: 1 // Track who goes first in next leg (0 or 1), alternates each leg
+  };
+}
+
+// Get or create room
+function getOrCreateRoom(roomId) {
+  if (!roomId || roomId === 'undefined') {
+    roomId = 'default';
+  }
+  
+  if (!rooms.has(roomId)) {
+    rooms.set(roomId, createInitialGameState());
+    console.log(`Created new room: ${roomId}`);
+  }
+  
+  return rooms.get(roomId);
+}
 
 function computeAverage(player) {
   if (!player || !player.dartsThrown) return 0;
   return (player.totalScored / player.dartsThrown) * 3;
 }
 
-function updatePlayerAverages() {
+function updatePlayerAverages(gameState) {
   gameState.players.forEach(p => {
     p.average = computeAverage(p);
   });
@@ -90,23 +108,24 @@ const server = http.createServer((req, res) => {
 // Create WebSocket server
 const wss = new WebSocket.Server({ noServer: true });
 
-// Broadcast state to all connected clients
-function broadcast() {
-  updatePlayerAverages();
+// Broadcast state to all connected clients in the same room
+function broadcast(roomId) {
+  const gameState = getOrCreateRoom(roomId);
+  updatePlayerAverages(gameState);
 
   const stateWithCheckout = {
     ...gameState,
     checkoutSuggestion: getCheckoutSuggestion(gameState.players[gameState.players.findIndex(p => p.isActive)].score),
-    legWin: lastLegWinner !== null,
-    setWin: lastSetWinner !== null,
-    gameWin: lastGameWinner !== null,
-    legWinner: lastLegWinner,
-    setWinner: lastSetWinner,
-    gameWinner: lastGameWinner
+    legWin: gameState.lastLegWinner !== null,
+    setWin: gameState.lastSetWinner !== null,
+    gameWin: gameState.lastGameWinner !== null,
+    legWinner: gameState.lastLegWinner,
+    setWinner: gameState.lastSetWinner,
+    gameWinner: gameState.lastGameWinner
   };
   
   wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
       client.send(JSON.stringify({
         type: 'stateUpdate',
         data: stateWithCheckout
@@ -115,9 +134,9 @@ function broadcast() {
   });
   
   // Reset win flags after broadcasting
-  lastLegWinner = null;
-  lastSetWinner = null;
-  lastGameWinner = null;
+  gameState.lastLegWinner = null;
+  gameState.lastSetWinner = null;
+  gameState.lastGameWinner = null;
 }
 
 // Get checkout suggestion for current score
@@ -133,7 +152,8 @@ function isValidScore(currentScore, deduction) {
 }
 
 // Handle player input
-function addScore(playerIndex, scoreValue, dartCount = 3) {
+function addScore(roomId, playerIndex, scoreValue, dartCount = 3) {
+  const gameState = getOrCreateRoom(roomId);
   const player = gameState.players[playerIndex];
   const newScore = player.score - scoreValue;
 
@@ -150,8 +170,8 @@ function addScore(playerIndex, scoreValue, dartCount = 3) {
       beforeScore: player.score,
       afterScore: player.score
     });
-    switchPlayer();
-    broadcast();
+    switchPlayer(gameState);
+    broadcast(roomId);
     return { success: false, reason: 'bust' };
   }
 
@@ -165,7 +185,7 @@ function addScore(playerIndex, scoreValue, dartCount = 3) {
     player.legs++;
     player.totalScored += scoreValue;
     player.dartsThrown += dartCount;
-    lastLegWinner = playerIndex;
+    gameState.lastLegWinner = playerIndex;
     gameState.history.push({
       timestamp: Date.now(),
       player: playerIndex,
@@ -180,19 +200,19 @@ function addScore(playerIndex, scoreValue, dartCount = 3) {
     if (player.legs >= gameState.firstTo) {
       gameState.gameOver = true;
       gameState.winner = playerIndex;
-      lastGameWinner = playerIndex;
-      broadcast();
+      gameState.lastGameWinner = playerIndex;
+      broadcast(roomId);
       return { success: true, legWin: true, gameWin: true };
     }
 
     // Leg won but match not won yet
     // Loser of leg starts next leg
-    switchPlayerAfterLegWin(playerIndex);
+    switchPlayerAfterLegWin(gameState, playerIndex);
     
     // Reset scores for next leg
     gameState.players.forEach(p => p.score = gameState.startScore || 501);
     
-    broadcast();
+    broadcast(roomId);
     return { success: true, legWin: true, gameWin: false };
   }
 
@@ -210,12 +230,13 @@ function addScore(playerIndex, scoreValue, dartCount = 3) {
     afterScore: player.score
   });
 
-  switchPlayer();
-  broadcast();
+  switchPlayer(gameState);
+  broadcast(roomId);
   return { success: true, legWin: false };
 }
 
-function addBust(playerIndex, dartCount = 3) {
+function addBust(roomId, playerIndex, dartCount = 3) {
+  const gameState = getOrCreateRoom(roomId);
   const player = gameState.players[playerIndex];
   player.dartsThrown += dartCount;
 
@@ -229,28 +250,30 @@ function addBust(playerIndex, dartCount = 3) {
     afterScore: player.score
   });
 
-  switchPlayer();
-  broadcast();
+  switchPlayer(gameState);
+  broadcast(roomId);
   return { success: true, bust: true };
 }
 
 // Switch active player
-function switchPlayer() {
+function switchPlayer(gameState) {
   const activeIndex = gameState.players.findIndex(p => p.isActive);
   gameState.players[activeIndex].isActive = false;
   gameState.players[1 - activeIndex].isActive = true;
 }
 
 // Determine who goes first in next leg (alternates between players)
-function switchPlayerAfterLegWin(legWinnerIndex) {
-  gameState.players[0].isActive = (nextLegStartPlayer === 0);
-  gameState.players[1].isActive = (nextLegStartPlayer === 1);
+function switchPlayerAfterLegWin(gameState, legWinnerIndex) {
+  gameState.players[0].isActive = (gameState.nextLegStartPlayer === 0);
+  gameState.players[1].isActive = (gameState.nextLegStartPlayer === 1);
   // Alternate for next leg
-  nextLegStartPlayer = 1 - nextLegStartPlayer;
+  gameState.nextLegStartPlayer = 1 - gameState.nextLegStartPlayer;
 }
 
 // Undo last action
-function undo() {
+function undo(roomId) {
+  const gameState = getOrCreateRoom(roomId);
+  
   if (gameState.history.length === 0) {
     console.log('No history to undo');
     return { success: false };
@@ -293,14 +316,16 @@ function undo() {
   gameState.players[lastAction.player].isActive = true;
   console.log(`Active player switched from ${activeIndex} to ${lastAction.player}`);
 
-  broadcast();
+  broadcast(roomId);
   return { success: true };
 }
 
 // Reset game
-function resetGame() {
+function resetGame(roomId) {
+  const gameState = getOrCreateRoom(roomId);
   const startScore = gameState.startScore || 501;
-  gameState = {
+  
+  const newState = {
     players: [
       { name: gameState.players[0].name, score: startScore, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
       { name: gameState.players[1].name, score: startScore, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
@@ -309,25 +334,33 @@ function resetGame() {
     startScore: startScore,
     history: [],
     gameOver: false,
-    winner: null
+    winner: null,
+    lastLegWinner: null,
+    lastSetWinner: null,
+    lastGameWinner: null,
+    nextLegStartPlayer: 1 // Reset so player 2 starts leg 2 after player 1 starts leg 1
   };
-  nextLegStartPlayer = 1; // Reset so player 2 starts leg 2 after player 1 starts leg 1
-  broadcast();
+  
+  rooms.set(roomId, newState);
+  broadcast(roomId);
   return { success: true };
 }
 
 // Update player name
-function updatePlayerName(playerIndex, newName) {
+function updatePlayerName(roomId, playerIndex, newName) {
+  const gameState = getOrCreateRoom(roomId);
+  
   if (playerIndex >= 0 && playerIndex < 2) {
     gameState.players[playerIndex].name = newName;
-    broadcast();
+    broadcast(roomId);
     return { success: true };
   }
   return { success: false };
 }
 
 // Update first-to value (only if game is not in progress)
-function updateFirstTo(value) {
+function updateFirstTo(roomId, value) {
+  const gameState = getOrCreateRoom(roomId);
   const val = parseInt(value);
   
   // Only allow changes if no legs have been played yet (fresh game)
@@ -338,15 +371,17 @@ function updateFirstTo(value) {
   
   if (val > 0 && val <= 20) {
     gameState.firstTo = val;
-    broadcast();
+    broadcast(roomId);
     return { success: true };
   }
   return { success: false };
 }
 
 // Update game type (501 vs 301)
-function updateGameType(gameType) {
+function updateGameType(roomId, gameType) {
+  const gameState = getOrCreateRoom(roomId);
   const type = parseInt(gameType);
+  
   if (type === 301 || type === 501) {
     gameState.startScore = type;
     gameState.players.forEach(p => {
@@ -357,7 +392,7 @@ function updateGameType(gameType) {
       p.legs = 0;
     });
     gameState.history = [];
-    broadcast();
+    broadcast(roomId);
     return { success: true };
   }
   return { success: false };
@@ -367,25 +402,34 @@ function updateGameType(gameType) {
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
-  // Send initial state
-  ws.send(JSON.stringify({
-    type: 'stateUpdate',
-    data: {
-      ...gameState,
-      checkoutSuggestion: getCheckoutSuggestion(gameState.players[gameState.players.findIndex(p => p.isActive)].score)
-    }
-  }));
-
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data);
-      console.log('Message received:', message.type, message);
+      const roomId = message.roomId || 'default';
+      
+      // Store room ID with WebSocket connection
+      ws.roomId = roomId;
+      
+      console.log(`Message received in room ${roomId}:`, message.type);
 
       switch (message.type) {
+        case 'join':
+          // Client is joining a room - send initial state
+          const gameState = getOrCreateRoom(roomId);
+          ws.send(JSON.stringify({
+            type: 'stateUpdate',
+            data: {
+              ...gameState,
+              checkoutSuggestion: getCheckoutSuggestion(gameState.players[gameState.players.findIndex(p => p.isActive)].score)
+            }
+          }));
+          break;
+
         case 'score':
           console.log('Processing score:', message.playerIndex, message.value, 'darts:', message.darts);
           addScore(
-            message.playerIndex !== undefined ? message.playerIndex : gameState.players.findIndex(p => p.isActive),
+            roomId,
+            message.playerIndex !== undefined ? message.playerIndex : getOrCreateRoom(roomId).players.findIndex(p => p.isActive),
             message.value,
             message.darts || 3
           );
@@ -393,42 +437,44 @@ wss.on('connection', (ws) => {
 
         case 'bust':
           addBust(
-            message.playerIndex !== undefined ? message.playerIndex : gameState.players.findIndex(p => p.isActive),
+            roomId,
+            message.playerIndex !== undefined ? message.playerIndex : getOrCreateRoom(roomId).players.findIndex(p => p.isActive),
             message.darts || 3
           );
           break;
 
         case 'switchPlayer':
-          switchPlayer();
-          broadcast();
+          switchPlayer(getOrCreateRoom(roomId));
+          broadcast(roomId);
           break;
 
         case 'undo':
-          undo();
+          undo(roomId);
           break;
 
         case 'resetGame':
-          resetGame();
+          resetGame(roomId);
           break;
 
         case 'updateName':
-          updatePlayerName(message.playerIndex, message.name);
+          updatePlayerName(roomId, message.playerIndex, message.name);
           break;
 
         case 'updateFirstTo':
-          updateFirstTo(message.value);
+          updateFirstTo(roomId, message.value);
           break;
 
         case 'updateGameType':
-          updateGameType(message.gameType);
+          updateGameType(roomId, message.gameType);
           break;
 
         case 'getState':
+          const state = getOrCreateRoom(roomId);
           ws.send(JSON.stringify({
             type: 'stateUpdate',
             data: {
-              ...gameState,
-              checkoutSuggestion: getCheckoutSuggestion(gameState.players[gameState.players.findIndex(p => p.isActive)].score)
+              ...state,
+              checkoutSuggestion: getCheckoutSuggestion(state.players[state.players.findIndex(p => p.isActive)].score)
             }
           }));
           break;

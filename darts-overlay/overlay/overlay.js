@@ -9,7 +9,14 @@ function getWebSocketURL() {
     return `${protocol}//${host}`;
 }
 
+// Get room ID from URL parameter
+function getRoomIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('room') || 'default';
+}
+
 const WS_URL = getWebSocketURL();
+const currentRoomId = getRoomIdFromURL();
 
 let gameState = {
     players: [
@@ -35,7 +42,12 @@ function initWebSocket() {
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
-        console.log('Connected to game server');
+        console.log('Connected to game server, joining room:', currentRoomId);
+        // Join room immediately upon connection
+        ws.send(JSON.stringify({ 
+            type: 'join',
+            roomId: currentRoomId
+        }));
     };
 
     ws.onmessage = (event) => {
@@ -357,6 +369,12 @@ function setInitialWindowSize() {
 
 // Initialize on page load
 window.addEventListener('DOMContentLoaded', () => {
+    // Display room ID
+    const roomIdElement = document.getElementById('overlay-room-id');
+    if (roomIdElement) {
+        roomIdElement.textContent = currentRoomId;
+    }
+    
     applyObsMode();
     setInitialWindowSize();
     initWebSocket();

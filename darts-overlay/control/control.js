@@ -8,6 +8,19 @@ function getWebSocketURL() {
     return `${protocol}//${host}`;
 }
 
+// Generate random 6-character room ID
+function generateRoomId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// Room ID for this game session
+let currentRoomId = generateRoomId();
+
 // Checkout suggestions table (all legal finishes from 2-170)
 // In darts, checkout MUST end with a double (D)
 // Valid darts: S1-S20, D1-D20 (40 max), T1-T20, S25 (Bull), D25 (50)
@@ -172,7 +185,7 @@ function handleRematchFromWinModal() {
     resetForNextLeg();
     roundHistory = { 0: [], 1: [] };
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'resetGame' }));
+        ws.send(JSON.stringify({ type: 'resetGame', roomId: currentRoomId }));
     }
 }
 
@@ -236,7 +249,7 @@ function openOverlay() {
     const left = (screen.width - width) / 2;
     const top = (screen.height - height) / 2;
     
-    window.open('/overlay/overlay.html', 'overlay', 
+    window.open(`/overlay/overlay.html?room=${currentRoomId}`, 'overlay', 
         `width=${width},height=${height},left=${left},top=${top},resizable=yes`);
     
     showToast('Overlay opnað!');
@@ -269,7 +282,12 @@ function initWebSocket() {
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
-        console.log('Connected to server');
+        console.log('Connected to server, joining room:', currentRoomId);
+        // Join room immediately upon connection
+        ws.send(JSON.stringify({ 
+            type: 'join',
+            roomId: currentRoomId
+        }));
     };
 
     ws.onmessage = (event) => {
@@ -567,6 +585,7 @@ function handleNumberInput(value) {
             showToast('Þú verð að enda með double eða bull (25/50)!');
             ws.send(JSON.stringify({
                 type: 'bust',
+                roomId: currentRoomId,
                 playerIndex: activePlayer,
                 darts: currentDarts.length
             }));
@@ -693,6 +712,7 @@ function submitRound() {
     if (newScore < 0 || newScore === 1) {
         ws.send(JSON.stringify({
             type: 'bust',
+            roomId: currentRoomId,
             playerIndex: activePlayer,
             darts: currentDarts.length
         }));
@@ -712,6 +732,7 @@ function submitRound() {
             showToast('Þú verð að enda með double eða bull (25/50)!');
             ws.send(JSON.stringify({
                 type: 'bust',
+                roomId: currentRoomId,
                 playerIndex: activePlayer,
                 darts: currentDarts.length
             }));
@@ -728,6 +749,7 @@ function submitRound() {
     console.log('Sending score:', { playerIndex: activePlayer, value: totalScore, darts: currentDarts.length });
     ws.send(JSON.stringify({
         type: 'score',
+        roomId: currentRoomId,
         playerIndex: activePlayer,
         value: totalScore,
         darts: currentDarts.length
@@ -798,7 +820,8 @@ function undoRound() {
     }
     
     ws.send(JSON.stringify({
-        type: 'undo'
+        type: 'undo',
+        roomId: currentRoomId
     }));
 
     console.log('Undo message sent to server');
@@ -848,6 +871,12 @@ function resetGame() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Display room ID
+    const roomIdElement = document.getElementById('room-id');
+    if (roomIdElement) {
+        roomIdElement.textContent = currentRoomId;
+    }
+    
     initWebSocket();
 
     // Number pad buttons
@@ -914,6 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('p1-name-input').addEventListener('change', (e) => {
         ws.send(JSON.stringify({
             type: 'updateName',
+            roomId: currentRoomId,
             playerIndex: 0,
             name: e.target.value
         }));
@@ -922,6 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('p2-name-input').addEventListener('change', (e) => {
         ws.send(JSON.stringify({
             type: 'updateName',
+            roomId: currentRoomId,
             playerIndex: 1,
             name: e.target.value
         }));
@@ -941,7 +972,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         ws.send(JSON.stringify({
             type: 'updateFirstTo',
-            firstTo: newValue
+            roomId: currentRoomId,
+            value: newValue
         }));
     });
 
@@ -950,6 +982,7 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('change', (e) => {
             ws.send(JSON.stringify({
                 type: 'updateGameType',
+                roomId: currentRoomId,
                 gameType: parseInt(e.target.value)
             }));
         });
@@ -1011,29 +1044,34 @@ function startNewGame() {
     // Send game setup to server
     ws.send(JSON.stringify({
         type: 'updateName',
+        roomId: currentRoomId,
         playerIndex: 0,
         name: p1Name
     }));
 
     ws.send(JSON.stringify({
         type: 'updateName',
+        roomId: currentRoomId,
         playerIndex: 1,
         name: p2Name
     }));
 
     ws.send(JSON.stringify({
         type: 'updateGameType',
+        roomId: currentRoomId,
         gameType: parseInt(gameType)
     }));
 
     // Reset game first to clear legs
     ws.send(JSON.stringify({
-        type: 'resetGame'
+        type: 'resetGame',
+        roomId: currentRoomId
     }));
 
     // Then update firstTo after reset
     ws.send(JSON.stringify({
         type: 'updateFirstTo',
+        roomId: currentRoomId,
         value: firstTo
     }));
     
