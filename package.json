@@ -5,7 +5,11 @@
   "main": "darts-overlay/server/server.js",
   "scripts": {
     "start": "node darts-overlay/server/server.js",
-    "dev": "node darts-overlay/server/server.js"
+    "dev": "node darts-overlay/server/server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint darts-overlay/server darts-overlay/control"
   },
   "keywords": [
     "darts",
