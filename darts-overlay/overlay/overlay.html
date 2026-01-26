@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borð Leikanna</title>
+    <link rel="stylesheet" href="overlay.css">
+</head>
+<body>
+    <div class="overlay-container">
+        <div class="checkout-display" id="checkout"></div>
+        <div class="leg-toast" id="leg-toast"></div>
+        <!-- Scoreboard Table -->
+        <div class="scoreboard">
+            <!-- Column Headers -->
+            <div class="header-row">
+                <div class="col col-name"><span id="game-heading">501 - 5 leggir til sigurs</span></div>
+                <div class="col col-avg">AVG</div>
+                <div class="col col-legs">LEGGIR</div>
+                <div class="col col-score">SKOR (P)</div>
+            </div>
+
+            <!-- Player 1 -->
+            <div class="player-row player-1" id="player1-section">
+                <div class="col col-name"><span class="active-indicator" id="p1-active">🎯</span><span class="player-name" id="p1-name">Leikmaður 1</span></div>
+                <div class="col col-avg"><span id="p1-avg">0.0</span></div>
+                <div class="col col-legs"><span id="p1-legs">0</span></div>
+                <div class="col col-score"><span id="p1-score">501</span> <span class="darts-count" id="p1-darts">(0)</span></div>
+            </div>
+
+            <!-- Player 2 -->
+            <div class="player-row player-2" id="player2-section">
+                <div class="col col-name"><span class="active-indicator" id="p2-active">🎯</span><span class="player-name" id="p2-name">Leikmaður 2</span></div>
+                <div class="col col-avg"><span id="p2-avg">0.0</span></div>
+                <div class="col col-legs"><span id="p2-legs">0</span></div>
+                <div class="col col-score"><span id="p2-score">501</span> <span class="darts-count" id="p2-darts">(0)</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="overlay.js"></script>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Overlay - Forsíða</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #1e90ff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(30, 144, 255, 0.3);
+        }
+
+        h1 {
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .info-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #00d4ff;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        a {
+            display: inline-block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #00d4ff, #00a8ff);
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+        }
+
+        .overlay-link {
+            background: linear-gradient(135deg, #1e90ff, #0066ff);
+            color: white;
+        }
+
+        .overlay-link:hover {
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.6);
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid #00d4ff;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .status.online {
+            color: #00ff00;
+        }
+
+        .status.offline {
+            color: #ff4444;
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ffff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #ffff00;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        code {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #00d4ff;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Darts 501 Leikakerfið</h1>
+
+        <div class="status online" id="status">
+            ✓ Þjónninn er OPP og tilbúið
+        </div>
+
+        <div class="info-box">
+            <strong>✓ WebSocket Þjónn:</strong> Keyrir á hóli 8080
+        </div>
+
+        <h2 style="color: #00d4ff; margin-top: 30px; margin-bottom: 15px;">Flýtileiðir</h2>
+
+        <div class="links">
+            <a href="control/control.html">📋 Stjórnborð</a>
+            <a href="overlay/overlay.html" class="overlay-link" target="_blank">📺 Borð (OBS)</a>
+        </div>
+
+        <div class="instructions">
+            <h3>📖 Hvernig á að nota</h3>
+            <ul>
+                <li><strong>Stjórnborð:</strong> Sláðu inn stig, stjórnaðu leikendum, stilltu leik</li>
+                <li><strong>Borð:</strong> Afritaðu vefslóð til OBS Browser Source</li>
+                <li><strong>Lyklaborð:</strong> Tölur + Enter (stig), Space (breyta), U (afturkalla)</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>🎥 OBS Uppsetning</h3>
+            <ul>
+                <li>Bættu við <strong>Browser</strong> uppruna á OBS</li>
+                <li>Vefslóð: Afritaðu frá <code>overlay/overlay.html</code></li>
+                <li>Stærð: 1920×1080</li>
+                <li>Lagðu yfir efni þitt</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="margin-top: 30px;">
+            <strong>💡 Ábending:</strong> Opnaðu stjórnborðið fyrst, þá tengist borðið sjálkrafa
+        </div>
+    </div>
+
+    <script>
+        // Check server connectivity
+        function checkServer() {
+            const ws = new WebSocket('ws://localhost:8080');
+            ws.onopen = () => {
+                document.getElementById('status').textContent = '✓ Þjónninn er OPP og tilbúið';
+                document.getElementById('status').className = 'status online';
+                ws.close();
+            };
+            ws.onerror = () => {
+                document.getElementById('status').textContent = '✗ Þjónninn er NIÐRI - athugtaðu stöðu';
+                document.getElementById('status').className = 'status offline';
+            };
+        }
+
+        // Check on load and every 5 seconds
+        checkServer();
+        setInterval(checkServer, 5000);
+    </script>
+</body>
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Overlay - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        h1 {
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        .info-box {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #00ff00;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        a {
+            display: inline-block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+        }
+
+        .overlay-link {
+            background: linear-gradient(135deg, #0066ff, #0055cc);
+            color: white;
+        }
+
+        .overlay-link:hover {
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.6);
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .status.online {
+            color: #00ff00;
+        }
+
+        .status.offline {
+            color: #ff4444;
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ffff00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #ffff00;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        code {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #00ff00;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Darts 501 Overlay System</h1>
+
+        <div class="status online" id="status">
+            ✓ Server is ONLINE and ready
+        </div>
+
+        <div class="info-box">
+            <strong>✓ WebSocket Server:</strong> Running on port 8080
+        </div>
+
+        <h2 style="color: #00ff00; margin-top: 30px; margin-bottom: 15px;">Quick Links</h2>
+
+        <div class="links">
+            <a href="control/control.html">📋 Control Panel</a>
+            <a href="overlay/overlay.html" class="overlay-link" target="_blank">📺 Overlay (OBS)</a>
+        </div>
+
+        <div class="instructions">
+            <h3>📖 How to Use</h3>
+            <ul>
+                <li><strong>Control Panel:</strong> Enter scores, manage players, configure game settings</li>
+                <li><strong>Overlay:</strong> Copy URL to OBS Browser Source for broadcast</li>
+                <li><strong>Keyboard:</strong> Numbers + Enter (score), Space (switch), U (undo)</li>
+            </ul>
+        </div>
+
+        <div class="instructions">
+            <h3>🎥 OBS Setup</h3>
+            <ul>
+                <li>Add <strong>Browser</strong> source to OBS</li>
+                <li>URL: Copy from <code>overlay/overlay.html</code></li>
+                <li>Size: 1920×1080</li>
+                <li>Layer over your content</li>
+            </ul>
+        </div>
+
+        <div class="info-box" style="margin-top: 30px;">
+            <strong>💡 Tip:</strong> Open Control Panel first, then Overlay will connect automatically
+        </div>
+    </div>
+
+    <script>
+        // Check server connectivity
+        function checkServer() {
+            const ws = new WebSocket('ws://localhost:8080');
+            ws.onopen = () => {
+                document.getElementById('status').textContent = '✓ Server is ONLINE and ready';
+                document.getElementById('status').className = 'status online';
+                ws.close();
+            };
+            ws.onerror = () => {
+                document.getElementById('status').textContent = '✗ Server is OFFLINE - check console';
+                document.getElementById('status').className = 'status offline';
+            };
+        }
+
+        // Check on load and every 5 seconds
+        checkServer();
+        setInterval(checkServer, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+/* === BASE STYLES (Völsungur-inspired) === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --green-deep: #0d3a22;
+    --green-mid: #1a7f4c;
+    --green-bright: #26d983;
+    --white: #ffffff;
+    --accent-gold: #f0d583;
+    --shadow-strong: rgba(0, 0, 0, 0.5);
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    overflow: hidden;
+    color: var(--white);
+}
+
+.overlay-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+}
+
+/* Hide scoreboard and other elements when animations are active */
+body.leg-animation-active .scoreboard,
+body.leg-animation-active .checkout-display,
+body.leg-animation-active .leg-toast,
+body.game-animation-active .scoreboard,
+body.game-animation-active .checkout-display,
+body.game-animation-active .leg-toast {
+    opacity: 0 !important;
+    pointer-events: none;
+    display: none;
+}
+
+
+.header-row .col-name #game-heading {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: var(--white);
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.checkout-display {
+    display: none;
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    min-width: 140px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(26, 127, 76, 0.9), rgba(13, 58, 34, 0.85));
+    border: 2px solid var(--green-bright);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-strong);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    color: var(--white);
+    z-index: 130;
+    transition: opacity 0.3s ease;
+}
+
+.checkout-display.visible {
+    display: block;
+}
+
+.leg-toast {
+    position: fixed;
+    top: 22px;
+    left: 50%;
+    transform: translate(-50%, -30px);
+    padding: 12px 24px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ffcf33, #ff8f1f);
+    color: #1a1a1a;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    z-index: 140;
+    display: none;
+
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.leg-toast.show {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+/* === SCOREBOARD TABLE === */
+.scoreboard {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: auto;
+    padding: 20px 24px;
+    gap: 0;
+    background: transparent;
+    z-index: 100;
+    transition: opacity 0.3s ease;
+}
+
+.header-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 50px 150px;
+    gap: 8px;
+    padding: 12px 14px;
+    background: linear-gradient(90deg, rgba(26, 127, 76, 0.85), rgba(13, 58, 34, 0.8));
+    border-bottom: 3px solid var(--green-bright);
+    margin-bottom: 0;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 4px 12px var(--shadow-strong);
+}
+
+.header-row .col {
+    color: var(--white);
+    font-weight: 900;
+    font-size: 15px;
+    text-align: center;
+    padding: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.player-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 50px 150px;
+    gap: 8px;
+    padding: 16px 14px;
+    background: linear-gradient(90deg, rgba(26, 127, 76, 0.75), rgba(13, 58, 34, 0.7));
+    border-left: 4px solid var(--green-bright);
+    margin-bottom: 0;
+    align-items: center;
+    min-height: 55px;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.player-row:first-of-type {
+    border-radius: 0 0 0 0;
+}
+
+.player-row:last-of-type {
+    border-radius: 0 0 8px 8px;
+    margin-bottom: 12px;
+}
+
+.player-row:hover {
+    background: linear-gradient(90deg, rgba(38, 217, 131, 0.35), rgba(26, 127, 76, 0.45));
+    box-shadow: 0 6px 20px rgba(38, 217, 131, 0.4);
+}
+
+.col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.col-flag {
+    font-size: 32px;
+    display: none;
+}
+
+.col-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--white);
+    justify-content: flex-start;
+    padding-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.col-active {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.col-avg {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--white);
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.col-sets,
+.col-legs {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--white);
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.col-score {
+    font-size: 22px;
+    font-weight: 900;
+    color: #FFD700;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.update-flash {
+    animation: scoreFlash 0.8s ease;
+}
+
+@keyframes scoreFlash {
+    0% { color: #fff; text-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+    30% { color: #fffbcc; text-shadow: 0 0 22px rgba(255, 223, 109, 0.9); }
+    60% { color: #ffd700; text-shadow: 0 0 12px rgba(255, 215, 0, 0.8); }
+    100% { color: #ffd700; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4); }
+}
+
+.darts-count {
+    font-size: 16px;
+    color: #d8f5e8;
+    margin-left: 4px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* === ACTIVE INDICATOR === */
+.active-indicator {
+    display: inline-block;
+    font-size: 20px;
+    opacity: 0;
+    width: 24px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 0px rgba(38, 217, 131, 0);
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.player-row.active .active-indicator {
+    opacity: 1;
+    text-shadow: 0 0 20px rgba(38, 217, 131, 0.9);
+    animation: dart-pulse 1.2s infinite;
+}
+
+@keyframes dart-pulse {
+    0%, 100% {
+        text-shadow: 0 0 20px rgba(38, 217, 131, 0.9);
+    }
+    50% {
+        text-shadow: 0 0 8px rgba(38, 217, 131, 0.5);
+    }
+}
+
+/* Winner state: show golden glow on icon */
+.player-row.winner .active-indicator {
+    opacity: 1;
+    text-shadow: 0 0 22px rgba(240, 213, 131, 0.95);
+}
+
+/* Trophy pop animation at legs cell */
+.trophy-pop {
+    position: absolute;
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(13, 58, 34, 0.7);
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.trophy-pop .trophy {
+    font-size: 22px;
+}
+
+.trophy-pop .trophy-count {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--accent-gold);
+    font-family: 'Courier New', monospace;
+}
+
+.trophy-pop.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.0);
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.trophy-pop.hide {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+
+/* Burst pop animation at score cell */
+.bust-pop {
+    position: absolute;
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1500;
+    font-size: 24px;
+}
+
+.bust-pop.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.0);
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.bust-pop.hide {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+}

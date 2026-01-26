@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Control Panel</title>
+    <link rel="stylesheet" href="/control/control.css">
+</head>
+<body>
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- Leg Win Modal -->
+    <div id="legWinModal" class="modal">
+        <div class="modal-content">
+            <h2 id="legWinText"></h2>
+            <button id="nextLegBtn" class="btn-next-leg">Næsti Leggur</button>
+        </div>
+    </div>
+
+    <!-- Game Win Options Modal -->
+    <div id="gameWinOptionsModal" class="modal">
+        <div class="modal-content">
+            <h2 id="gameWinOptionsText">Leik lokið</h2>
+            <div class="button-group button-group-double">
+                <button id="win-rematch-btn" class="btn-save">Spila aftur</button>
+                <button id="win-newgame-btn" class="btn-close">Nýr leikur</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bust Modal -->
+    <div id="bustModal" class="modal">
+        <div class="modal-content bust-modal">
+            <h3 id="bustPlayerName"></h3>
+            <h2>SPRUNGINN!</h2>
+            <p id="bustMessage"></p>
+            <button id="retryBtn" class="btn-retry">HALDA ÁFRAM</button>
+        </div>
+    </div>
+
+    <!-- Undo Round Warning Modal -->
+    <div id="undoRoundModal" class="modal">
+        <div class="modal-content undo-round-modal">
+            <h3>Afturkalla?</h3>
+            <p id="undoRoundMessage">Þú ert að fara að afturkalla heila umferð.</p>
+            <div class="button-group button-group-double">
+                <button id="cancelUndoRoundBtn" class="btn-undo-cancel">Hætta við</button>
+                <button id="confirmUndoRoundBtn" class="btn-undo-confirm">Afturkalla</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="control-panel">
+        <!-- Header -->
+        <div class="panel-header">
+            <div class="round-info">UMFERÐ <span id="round-number">1</span></div>
+            <div class="header-controls">
+                <button id="live-indicator" class="live-btn" type="button">LIVE</button>
+                <button id="new-game-btn" class="new-game-btn" type="button">Nýr leikur</button>
+            </div>
+        </div>
+
+        <!-- Player Scores -->
+        <div class="player-scores">
+            <div class="player-card player-1">
+                <div class="player-score" id="p1-score">501</div>
+                <div class="player-name" id="p1-name">Leikmaður 1</div>
+                <div class="player-avg" id="p1-avg">Avg: 0.0</div>
+            </div>
+            <div class="player-card player-2">
+                <div class="player-score" id="p2-score">501</div>
+                <div class="player-name" id="p2-name">Leikmaður 2</div>
+                <div class="player-avg" id="p2-avg">Avg: 0.0</div>
+            </div>
+        </div>
+
+        <!-- Dart Tracker -->
+        <div class="dart-tracker">
+            <div class="dart-label" id="dart-1">PÍLA 1</div>
+            <div class="dart-label" id="dart-2">PÍLA 2</div>
+            <div class="dart-label" id="dart-3">PÍLA 3</div>
+        </div>
+
+        <!-- Round Score Display -->
+        <div class="average-display">
+            <span class="avg-label">Skor í þessari umferð:</span>
+            <span class="avg-value" id="checkout-suggestion">—</span>
+        </div>
+
+        <!-- New Game Modal (Hidden by default) -->
+        <div class="settings-section" id="new-game-modal">
+            <div class="settings-content">
+                <h2>Nýr Leikur</h2>
+                <div class="settings-group">
+                    <label for="p1-name-input">Leikmaður 1:</label>
+                    <input type="text" id="p1-name-input" placeholder="Nafn">
+                </div>
+                <div class="settings-group">
+                    <label for="p2-name-input">Leikmaður 2:</label>
+                    <input type="text" id="p2-name-input" placeholder="Nafn">
+                </div>
+                <div class="settings-group">
+                    <label>Leikur:</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="game-type" value="501" checked>
+                            501
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="game-type" value="301">
+                            301
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <label for="first-to-input">Leggir til að vinna:</label>
+                    <input type="number" id="first-to-input" value="3" min="1" max="20">
+                </div>
+                <div class="button-group button-group-single">
+                    <button id="start-new-game-btn" class="btn-save">Byrja nýjan leik</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Number Pad -->
+        <div class="number-pad">
+            <!-- Row 1 -->
+            <button class="num-btn" data-value="1">1</button>
+            <button class="num-btn" data-value="2">2</button>
+            <button class="num-btn" data-value="3">3</button>
+            <button class="num-btn" data-value="4">4</button>
+
+            <!-- Row 2 -->
+            <button class="num-btn" data-value="5">5</button>
+            <button class="num-btn" data-value="6">6</button>
+            <button class="num-btn" data-value="7">7</button>
+            <button class="num-btn" data-value="8">8</button>
+
+            <!-- Row 3 -->
+            <button class="num-btn" data-value="9">9</button>
+            <button class="num-btn" data-value="10">10</button>
+            <button class="num-btn" data-value="11">11</button>
+            <button class="num-btn" data-value="12">12</button>
+            <button class="num-btn" data-value="0">0</button>
+
+            <!-- Row 4 -->
+            <button class="num-btn" data-value="13">13</button>
+            <button class="num-btn" data-value="14">14</button>
+            <button class="num-btn" data-value="15">15</button>
+            <button class="num-btn" data-value="16">16</button>
+            <button class="num-btn" data-value="25">25</button>
+
+            <!-- Row 5 -->
+            <button class="num-btn" data-value="17">17</button>
+            <button class="num-btn" data-value="18">18</button>
+            <button class="num-btn" data-value="19">19</button>
+            <button class="num-btn" data-value="20">20</button>
+            <button class="num-btn" data-value="50">50</button>
+
+            <!-- Row 6: action buttons -->
+            <button class="modifier-btn" id="double-btn">DOUBLE</button>
+            <button class="modifier-btn" id="triple-btn">TRIPLE</button>
+            <button class="submit-btn btn-submit-inactive" id="submit-round-btn" disabled>STAÐFESTA UMFERÐ</button>
+            <button class="pad-undo-btn" id="undo-pad-btn" aria-label="Afturkalla síðustu píluna">&lt;</button>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <button id="undo-dart-btn" class="btn-control btn-undo-inactive" disabled>AFTURKALLA PÍLU</button>
+            <div class="control-spacer" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <!-- Leg Win Animation -->
+    <div class="leg-win-animation" id="leg-win-animation">
+        <div class="leg-particles" id="leg-particles"></div>
+        <div class="leg-win-content">
+            <div class="leg-winner-name" id="leg-winner-name">Leikmaður 1</div>
+            <div class="leg-wins-text">VINNUR LEGG!</div>
+            <div class="leg-score" id="leg-score">3 - 2</div>
+        </div>
+    </div>
+
+    <!-- Game Win Animation -->
+    <div class="win-animation" id="win-animation">
+        <div class="confetti-container" id="confetti-container"></div>
+        <div class="win-text">
+            <div class="trophy">🏆</div>
+            <div id="winner-name">Leikmaður 1</div>
+            <div class="wins-text">VINNUR LEIKINN!</div>
+            <div class="final-stats" id="final-stats"></div>
+        </div>
+    </div>
+
+    <script src="/control/control.js"></script>
+</body>
+</html>
