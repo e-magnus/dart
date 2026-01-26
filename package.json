@@ -1,0 +1,23 @@
+{
+  "name": "darts-overlay",
+  "version": "1.0.0",
+  "description": "Local offline darts scoreboard + OBS broadcast overlay system",
+  "main": "darts-overlay/server/server.js",
+  "scripts": {
+    "start": "node darts-overlay/server/server.js",
+    "dev": "node darts-overlay/server/server.js"
+  },
+  "keywords": [
+    "darts",
+    "501",
+    "overlay",
+    "obs",
+    "broadcast",
+    "scoreboard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.14.2"
+  }
+}
