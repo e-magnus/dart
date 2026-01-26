@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: darts-overlay
+    name: pila-eldhugi
     env: node
     plan: free
     buildCommand: npm install
