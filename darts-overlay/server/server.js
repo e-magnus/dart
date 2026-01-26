@@ -65,8 +65,9 @@ function updatePlayerAverages(gameState) {
 
 // Serve static files
 const server = http.createServer((req, res) => {
-  // Parse URL
-  let filePath = req.url === '/' ? '/control/control.html' : req.url;
+  // Parse URL and remove query string
+  let filePath = req.url.split('?')[0]; // Remove query string
+  filePath = filePath === '/' ? '/control/control.html' : filePath;
   
   // Security: prevent directory traversal
   if (filePath.includes('..')) {
