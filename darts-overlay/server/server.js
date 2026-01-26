@@ -61,7 +61,7 @@ const server = http.createServer((req, res) => {
   filePath = path.join(__dirname, '..', filePath);
 
   // Read and serve file
-  fs.readFile(filePath, 'utf8', (err, data) => {
+  fs.readFile(filePath, (err, data) => {
     if (err) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('404 Not Found\n');
