@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>Píla</title>
-    <link rel="manifest" href="/control/manifest.webmanifest">
+    <!-- Manifest loaded dynamically to avoid CORS issues on GitHub Codespaces -->
     <link rel="icon" type="image/svg+xml" href="/control/icons/pila.svg">
     <link rel="icon" type="image/png" href="/control/icons/icon-192.png" sizes="192x192">
     <link rel="apple-touch-icon" href="/control/icons/icon-192.png">
     <meta name="theme-color" content="#111827">
     <link rel="stylesheet" href="/control/control.css">
     <script>
-        // Suppress manifest loading errors on GitHub Codespaces
-        document.addEventListener('error', (e) => {
-            if (e.filename && e.filename.includes('manifest')) {
-                console.warn('Manifest loading skipped (expected on GitHub Codespaces)');
-                e.preventDefault();
-            }
-        }, true);
+        // Load manifest dynamically to handle CORS issues on GitHub Codespaces
+        if (document.location.hostname !== 'github.dev' && !document.location.host.includes('github.dev')) {
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = '/control/manifest.webmanifest';
+            document.head.appendChild(link);
+        }
     </script>
 </head>
 <body>
