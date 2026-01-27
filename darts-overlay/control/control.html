@@ -10,6 +10,15 @@
     <link rel="apple-touch-icon" href="/control/icons/icon-192.png">
     <meta name="theme-color" content="#111827">
     <link rel="stylesheet" href="/control/control.css">
+    <script>
+        // Suppress manifest loading errors on GitHub Codespaces
+        document.addEventListener('error', (e) => {
+            if (e.filename && e.filename.includes('manifest')) {
+                console.warn('Manifest loading skipped (expected on GitHub Codespaces)');
+                e.preventDefault();
+            }
+        }, true);
+    </script>
 </head>
 <body>
     <!-- Toast notification -->
