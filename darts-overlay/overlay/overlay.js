@@ -34,15 +34,72 @@ let lastDartsThrown = [0, 0];
 let legWinTimer = null;
 let pendingLegUpdate = null; // { index, prevLegs, newLegs }
 let bustTimer = null;
+let pendingState = null;
+let updateTimer = null;
+let reconnectDelay = 1000;
+let reconnectTimer = null;
+const MAX_RECONNECT_DELAY = 10000;
+const elementCache = {};
+
+function getEl(id) {
+    if (elementCache[id]) return elementCache[id];
+    const el = document.getElementById(id);
+    if (el) elementCache[id] = el;
+    return el;
+}
+
+function setTextIfChanged(el, value) {
+    if (!el) return;
+    const next = String(value);
+    if (el.textContent !== next) {
+        el.textContent = next;
+    }
+}
+
+function setConnectionStatus(status) {
+    const statusEl = getEl('overlay-status');
+    if (!statusEl) return;
+
+    statusEl.className = `overlay-status ${status}`;
+    if (status === 'connected') {
+        statusEl.textContent = 'Tengt';
+    } else if (status === 'reconnecting') {
+        statusEl.textContent = 'Endurtengir...';
+    } else if (status === 'error') {
+        statusEl.textContent = 'Villa í tengingu';
+    } else {
+        statusEl.textContent = 'Tengist...';
+    }
+}
+
+function scheduleStateUpdate(newState) {
+    pendingState = newState;
+    if (updateTimer) return;
+    updateTimer = setTimeout(() => {
+        const state = pendingState;
+        pendingState = null;
+        updateTimer = null;
+        if (state) {
+            updateGameState(state);
+        }
+    }, 50);
+}
 
 /**
  * Initialize WebSocket connection and set up event listeners
  */
 function initWebSocket() {
+    setConnectionStatus('connecting');
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
         console.log('Connected to game server, joining room:', currentRoomId);
+        setConnectionStatus('connected');
+        reconnectDelay = 1000;
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
         // Join room immediately upon connection
         ws.send(JSON.stringify({ 
             type: 'join',
@@ -51,19 +108,31 @@ function initWebSocket() {
     };
 
     ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === 'stateUpdate') {
-            updateGameState(message.data);
+        try {
+            const message = JSON.parse(event.data);
+            if (message.type === 'stateUpdate' && message.data) {
+                scheduleStateUpdate(message.data);
+            }
+        } catch (err) {
+            console.warn('Invalid message from server:', err);
         }
     };
 
     ws.onerror = (error) => {
         console.error('WebSocket error:', error);
+        setConnectionStatus('error');
     };
 
     ws.onclose = () => {
         console.log('Disconnected from server, retrying...');
-        setTimeout(initWebSocket, 2000);
+        setConnectionStatus('reconnecting');
+        if (!reconnectTimer) {
+            reconnectTimer = setTimeout(() => {
+                reconnectTimer = null;
+                initWebSocket();
+            }, reconnectDelay);
+            reconnectDelay = Math.min(reconnectDelay * 1.5, MAX_RECONNECT_DELAY);
+        }
     };
 }
 
@@ -87,29 +156,29 @@ function updateGameState(newState) {
     }
 
     // Update player names
-    document.getElementById('p1-name').textContent = gameState.players[0].name;
-    document.getElementById('p2-name').textContent = gameState.players[1].name;
+    setTextIfChanged(getEl('p1-name'), gameState.players[0].name);
+    setTextIfChanged(getEl('p2-name'), gameState.players[1].name);
 
     // Update scores with animation
     updateScoreDisplay(0);
     updateScoreDisplay(1);
 
     // Update averages
-    document.getElementById('p1-avg').textContent = (gameState.players[0].average || 0).toFixed(1);
-    document.getElementById('p2-avg').textContent = (gameState.players[1].average || 0).toFixed(1);
+    setTextIfChanged(getEl('p1-avg'), (gameState.players[0].average || 0).toFixed(1));
+    setTextIfChanged(getEl('p2-avg'), (gameState.players[1].average || 0).toFixed(1));
 
     // Update legs, but if leg-win animation running, hold winner's legs until animation completes
-    const p1LegsEl = document.getElementById('p1-legs');
-    const p2LegsEl = document.getElementById('p2-legs');
+    const p1LegsEl = getEl('p1-legs');
+    const p2LegsEl = getEl('p2-legs');
     if (pendingLegUpdate && pendingLegUpdate.index === 0) {
-        p1LegsEl.textContent = pendingLegUpdate.prevLegs;
-        p2LegsEl.textContent = gameState.players[1].legs;
+        setTextIfChanged(p1LegsEl, pendingLegUpdate.prevLegs);
+        setTextIfChanged(p2LegsEl, gameState.players[1].legs);
     } else if (pendingLegUpdate && pendingLegUpdate.index === 1) {
-        p1LegsEl.textContent = gameState.players[0].legs;
-        p2LegsEl.textContent = pendingLegUpdate.prevLegs;
+        setTextIfChanged(p1LegsEl, gameState.players[0].legs);
+        setTextIfChanged(p2LegsEl, pendingLegUpdate.prevLegs);
     } else {
-        p1LegsEl.textContent = gameState.players[0].legs;
-        p2LegsEl.textContent = gameState.players[1].legs;
+        setTextIfChanged(p1LegsEl, gameState.players[0].legs);
+        setTextIfChanged(p2LegsEl, gameState.players[1].legs);
     }
 
     // Update active/trophy indicator
@@ -127,15 +196,15 @@ function updateGameState(newState) {
  * Update score display with flash animation if score changed
  */
 function updateScoreDisplay(playerIndex) {
-    const scoreElement = document.getElementById(`p${playerIndex + 1}-score`);
-    const dartsElement = document.getElementById(`p${playerIndex + 1}-darts`);
+    const scoreElement = getEl(`p${playerIndex + 1}-score`);
+    const dartsElement = getEl(`p${playerIndex + 1}-darts`);
     const newScore = gameState.players[playerIndex].score;
     const oldScore = lastScores[playerIndex];
     const newDarts = gameState.players[playerIndex].dartsThrown || 0;
     const oldDarts = lastDartsThrown[playerIndex];
 
-    scoreElement.textContent = newScore;
-    dartsElement.textContent = `(${newDarts})`;
+    if (scoreElement) setTextIfChanged(scoreElement, newScore);
+    if (dartsElement) setTextIfChanged(dartsElement, `(${newDarts})`);
 
     // Detect bust: score didn't change but darts were thrown (darts increased)
     const isBust = oldScore === newScore && oldScore !== 501 && newDarts > oldDarts && newDarts > 0;
@@ -339,7 +408,7 @@ function updateCheckoutSuggestion(playerIndex) {
  * Update game heading to show game type and first-to
  */
 function updateGameHeading() {
-    const headingEl = document.getElementById('game-heading');
+    const headingEl = getEl('game-heading');
     if (!headingEl) return;
 
     const startScore = gameState.startScore || 501;
@@ -347,7 +416,7 @@ function updateGameHeading() {
     const headingText = firstTo === 1
         ? `${startScore} - 1 leggur til sigurs`
         : `${startScore} - ${firstTo} leggir til sigurs`;
-    headingEl.textContent = headingText;
+    setTextIfChanged(headingEl, headingText);
 }
 
 function applyObsMode() {
@@ -370,9 +439,9 @@ function setInitialWindowSize() {
 // Initialize on page load
 window.addEventListener('DOMContentLoaded', () => {
     // Display room ID
-    const roomIdElement = document.getElementById('overlay-room-id');
+    const roomIdElement = getEl('overlay-room-id');
     if (roomIdElement) {
-        roomIdElement.textContent = currentRoomId;
+        setTextIfChanged(roomIdElement, currentRoomId);
     }
     
     applyObsMode();
