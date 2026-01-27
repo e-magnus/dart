@@ -688,6 +688,17 @@ function initPlayerNameEditing(gameState) {
                 const newName = input.value.trim() || `Leikmaður ${playerIndex + 1}`;
                 gameState.players[playerIndex].name = newName;
                 elem.textContent = newName;
+                
+                // Send name update to server
+                if (typeof ws !== 'undefined' && ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'updateName',
+                        roomId: currentRoomId,
+                        playerIndex: playerIndex,
+                        name: newName
+                    }));
+                }
+                
                 // Emit event for other components to update
                 window.dispatchEvent(new CustomEvent('playerNameChanged', { detail: { playerIndex, name: newName } }));
             };
