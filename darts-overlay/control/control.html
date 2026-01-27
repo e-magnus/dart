@@ -76,18 +76,7 @@
         </div>
 
         <!-- Player Scores -->
-        <div class="player-scores">
-            <div class="player-card player-1">
-                <div class="player-score" id="p1-score">501</div>
-                <div class="player-name" id="p1-name" title="Smelltu til að breyta nafni">Leikmaður 1</div>
-                <div class="player-avg" id="p1-avg">Avg: 0.0</div>
-            </div>
-            <div class="player-card player-2">
-                <div class="player-score" id="p2-score">501</div>
-                <div class="player-name" id="p2-name" title="Smelltu til að breyta nafni">Leikmaður 2</div>
-                <div class="player-avg" id="p2-avg">Avg: 0.0</div>
-            </div>
-        </div>
+        <div class="player-scores" id="player-scores"></div>
 
         <!-- Dart Tracker -->
         <div class="dart-tracker">
@@ -107,12 +96,41 @@
             <div class="settings-content">
                 <h2>Nýr Leikur</h2>
                 <div class="settings-group">
-                    <label for="p1-name-input">Leikmaður 1:</label>
-                    <input type="text" id="p1-name-input" placeholder="Nafn">
+                    <label>Fjöldi leikmanna:</label>
+                    <div class="radio-group" id="player-count-group">
+                        <label class="radio-label">
+                            <input type="radio" name="player-count" value="1">
+                            1
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="player-count" value="2" checked>
+                            2
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="player-count" value="3">
+                            3
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="player-count" value="4">
+                            4
+                        </label>
+                    </div>
                 </div>
-                <div class="settings-group">
-                    <label for="p2-name-input">Leikmaður 2:</label>
-                    <input type="text" id="p2-name-input" placeholder="Nafn">
+                <div id="player-names-container">
+                    <div class="settings-group">
+                        <label for="p1-name-input">Leikmaður 1:</label>
+                        <input type="text" id="p1-name-input" placeholder="Nafn">
+                    </div>
+                    <div class="settings-group">
+                        <label for="p2-name-input">Leikmaður 2:</label>
+                        <input type="text" id="p2-name-input" placeholder="Nafn">
+                    </div>
+                </div>
+                <div class="settings-group" id="bull-up-option" style="display: none;">
+                    <label>
+                        <input type="checkbox" id="enable-bull-up">
+                        Nota "bull-up" til að ákveða röð
+                    </label>
                 </div>
                 <div class="settings-group">
                     <label>Leikur:</label>

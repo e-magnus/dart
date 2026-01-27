@@ -25,9 +25,16 @@ function updatePlayerStatusDisplay() {
     const scoreElement = document.getElementById('player-status-score');
     if (!scoreElement || !gameState || !gameState.players) return;
 
-    const p1 = gameState.players[0];
-    const p2 = gameState.players[1];
-    scoreElement.textContent = `${p1.legs} - ${p2.legs}`;
+    if (gameState.players.length <= 2) {
+        const p1 = gameState.players[0];
+        const p2 = gameState.players[1];
+        scoreElement.textContent = p2 ? `${p1.legs} - ${p2.legs}` : `${p1.legs}`;
+        return;
+    }
+
+    scoreElement.textContent = gameState.players
+        .map((player, index) => `L${index + 1}:${player.legs}`)
+        .join(' • ');
 }
 
 /**
@@ -57,25 +64,39 @@ function showToast(message) {
     const show = () => {
         toast.textContent = message;
         toast.classList.add('show');
-        
+
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3000);
     };
 
     if (shouldDelayWin || shouldDelayLeg) {
-        const delayMs = Math.max(shouldDelayWin ? 5200 : 0, shouldDelayLeg ? 6200 : 0);
+        const delayMs = Math.max(shouldDelayWin ? 3000 : 0, shouldDelayLeg ? 3000 : 0);
         setTimeout(show, delayMs);
         return;
     }
+
     show();
 }
 
-// ===== MODALS =====
-
 /**
- * Show leg win modal
+ * Update average display for player
  */
+function updatePlayerAverageDisplay(playerIndex) {
+    const avgEl = document.getElementById(`p${playerIndex + 1}-avg`);
+    if (!avgEl) return;
+    
+    const history = getRoundHistory(playerIndex);
+    if (history.length === 0) {
+        avgEl.textContent = 'Avg: 0.0';
+        return;
+    }
+    
+    const total = history.reduce((a, b) => a + b, 0);
+    const dartCount = total > 0 ? history.length * 3 : 1;
+    const average = (total / dartCount) * 3;
+    avgEl.textContent = `Avg: ${average.toFixed(1)}`;
+}
 function showLegWinModal(message, isGameWin, legWinnerIndex) {
     const modal = document.getElementById('legWinModal');
     const text = document.getElementById('legWinText');
@@ -167,7 +188,10 @@ function showUndoRoundModal() {
     if (!modal || !message) return;
     
     const activePlayerIndex = getActivePlayerIndex();
-    const lastPlayer = 1 - activePlayerIndex;
+    const playerCount = gameState && gameState.players ? gameState.players.length : 2;
+    const lastPlayer = playerCount > 0
+        ? (activePlayerIndex - 1 + playerCount) % playerCount
+        : 0;
     const lastPlayerName = gameState.players[lastPlayer]?.name || `Leikmaður ${lastPlayer + 1}`;
     const hasRoundToUndo = getRoundHistory(lastPlayer).length > 0;
 
@@ -212,29 +236,63 @@ function updateUI() {
  * Update player score displays
  */
 function updatePlayerScores() {
-    if (!gameState || !gameState.players || gameState.players.length < 2) return;
+    if (!gameState || !gameState.players) return;
 
-    const p1Score = document.getElementById('p1-score');
-    const p2Score = document.getElementById('p2-score');
-    const p1Name = document.getElementById('p1-name');
-    const p2Name = document.getElementById('p2-name');
-    const p1Card = document.querySelector('.player-card.player-1');
-    const p2Card = document.querySelector('.player-card.player-2');
-    
-    if (p1Score) p1Score.textContent = gameState.players[0].score;
-    if (p2Score) p2Score.textContent = gameState.players[1].score;
-    if (p1Name) p1Name.textContent = gameState.players[0].name;
-    if (p2Name) p2Name.textContent = gameState.players[1].name;
+    renderPlayerCardsIfNeeded();
 
-    if (p1Card && p2Card) {
-        if (gameState.players[0].isActive) {
-            p1Card.classList.add('active');
-            p2Card.classList.remove('active');
+    gameState.players.forEach((player, index) => {
+        const scoreEl = document.getElementById(`p${index + 1}-score`);
+        const nameEl = document.getElementById(`p${index + 1}-name`);
+        if (scoreEl) scoreEl.textContent = player.score;
+        if (nameEl) nameEl.textContent = player.name;
+    });
+
+    document.querySelectorAll('.player-card').forEach(card => {
+        const index = parseInt(card.dataset.playerIndex, 10);
+        if (Number.isNaN(index) || !gameState.players[index]) return;
+        if (gameState.players[index].isActive) {
+            card.classList.add('active');
         } else {
-            p1Card.classList.remove('active');
-            p2Card.classList.add('active');
+            card.classList.remove('active');
         }
+    });
+}
+
+/**
+ * Render player cards dynamically based on player count
+ */
+function renderPlayerCardsIfNeeded() {
+    const container = document.getElementById('player-scores');
+    if (!container || !gameState || !gameState.players) return;
+
+    const existingCards = container.querySelectorAll('.player-card');
+    if (existingCards.length === gameState.players.length) {
+        setPlayerScoreColumns(gameState.players.length);
+        return;
     }
+
+    container.innerHTML = '';
+    setPlayerScoreColumns(gameState.players.length);
+
+    gameState.players.forEach((player, index) => {
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.dataset.playerIndex = index;
+        card.innerHTML = `
+            <div class="player-score" id="p${index + 1}-score">${player.score}</div>
+            <div class="player-name" id="p${index + 1}-name" data-player-index="${index}" title="Smelltu til að breyta nafni">${player.name}</div>
+            <div class="player-avg" id="p${index + 1}-avg">Avg: 0.0</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function setPlayerScoreColumns(playerCount) {
+    const container = document.getElementById('player-scores');
+    if (!container) return;
+    const columns = Math.max(1, playerCount || 1);
+    container.style.setProperty('--player-columns', columns);
+    container.dataset.playerCount = String(columns);
 }
 
 /**
@@ -262,8 +320,10 @@ function updateDartTracker() {
     }
 
     // Update the round number display
-    const totalDarts = getRoundHistory(0).length + getRoundHistory(1).length;
-    const roundNumber = Math.floor(totalDarts / 2) + 1;
+    const playerCount = gameState && gameState.players ? gameState.players.length : 2;
+    const totalTurns = Array.from({ length: playerCount }, (_, index) => getRoundHistory(index).length)
+        .reduce((sum, count) => sum + count, 0);
+    const roundNumber = Math.floor(totalTurns / Math.max(playerCount, 1)) + 1;
     
     const roundEl = document.getElementById('round-number');
     if (roundEl) {
@@ -375,8 +435,23 @@ function updateCheckoutSuggestion() {
  * Update player averages
  */
 function updatePlayerAverages() {
-    updateP1AverageDisplay();
-    updateP2AverageDisplay();
+    if (!gameState || !gameState.players) return;
+
+    gameState.players.forEach((player, index) => {
+        const avgEl = document.getElementById(`p${index + 1}-avg`);
+        if (!avgEl) return;
+
+        const history = getRoundHistory(index);
+        if (history.length === 0) {
+            avgEl.textContent = 'Avg: 0.0';
+            return;
+        }
+
+        const total = history.reduce((a, b) => a + b, 0);
+        const dartCount = total > 0 ? history.length * 3 : 1;
+        const average = (total / dartCount) * 3;
+        avgEl.textContent = `Avg: ${average.toFixed(1)}`;
+    });
 }
 
 /**
@@ -479,6 +554,12 @@ function updateSpecialButtonAvailability() {
 
 // ===== SETTINGS UI =====
 
+function getSelectedPlayerCount() {
+    const selected = document.querySelector('input[name="player-count"]:checked');
+    const value = selected ? parseInt(selected.value, 10) : 2;
+    return Number.isNaN(value) ? 2 : value;
+}
+
 /**
  * Open new game settings modal
  */
@@ -504,13 +585,35 @@ function closeSettings() {
  * Sync form inputs with current game state
  */
 function syncInputsWithGameState() {
-    const p1Input = document.getElementById('p1-name-input');
-    const p2Input = document.getElementById('p2-name-input');
+    const playerCount = gameState.players.length;
     const firstToInput = document.getElementById('first-to-input');
-    
-    if (p1Input) p1Input.value = gameState.players[0].name;
-    if (p2Input) p2Input.value = gameState.players[1].name;
+    const playerCountRadios = document.querySelectorAll('input[name="player-count"]');
+    const bullUpCheckbox = document.getElementById('enable-bull-up');
+
+    if (playerCountRadios && playerCountRadios.length > 0) {
+        playerCountRadios.forEach(radio => {
+            radio.checked = radio.value === String(playerCount);
+        });
+    }
+
+    if (typeof updatePlayerNameInputs === 'function') {
+        updatePlayerNameInputs();
+    }
+
+    // Sync player names for all players
+    for (let i = 0; i < playerCount; i++) {
+        const input = document.getElementById(`p${i + 1}-name-input`);
+        if (input && gameState.players[i]) {
+            input.value = gameState.players[i].name;
+        }
+    }
+
     if (firstToInput) firstToInput.value = gameState.firstTo;
+    if (bullUpCheckbox) bullUpCheckbox.checked = false;
+
+    if (typeof updateBullUpOption === 'function') {
+        updateBullUpOption();
+    }
 }
 
 /**
@@ -608,8 +711,10 @@ function triggerLegWinAnimation(winnerIndex, autoStartNextLeg = false) {
     if (winnerNameEl) winnerNameEl.textContent = winner.name;
     
     const p1Legs = gameState.players[0].legs;
-    const p2Legs = gameState.players[1].legs;
-    if (legScoreEl) legScoreEl.textContent = `${p1Legs} - ${p2Legs}`;
+    const p2Legs = gameState.players[1]?.legs;
+    if (legScoreEl) {
+        legScoreEl.textContent = p2Legs !== undefined ? `${p1Legs} - ${p2Legs}` : `${p1Legs}`;
+    }
     
     createParticles();
     
@@ -655,64 +760,55 @@ function resetForNextLeg() {
 
 // ===== PLAYER NAME EDITING =====
 
-/**
- * Initialize click-to-edit functionality for player names
- */
-function initPlayerNameEditing(gameState) {
-    const playerNameElements = [
-        { elem: document.getElementById('p1-name'), playerIndex: 0 },
-        { elem: document.getElementById('p2-name'), playerIndex: 1 }
-    ];
+function initPlayerNameEditing(state) {
+    const container = document.getElementById('player-scores');
+    if (!container || container.dataset.nameEditingBound === 'true') return;
 
-    playerNameElements.forEach(({ elem, playerIndex }) => {
-        if (!elem) return;
+    container.dataset.nameEditingBound = 'true';
 
-        elem.addEventListener('click', () => {
-            if (elem.querySelector('input')) return; // Already editing
+    container.addEventListener('click', (event) => {
+        const target = event.target.closest('.player-name');
+        if (!target || target.querySelector('input')) return;
 
-            const currentName = gameState.players[playerIndex].name || `Leikmaður ${playerIndex + 1}`;
-            
-            // Create input field
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.className = 'player-name-input';
+        const playerIndex = parseInt(target.dataset.playerIndex, 10);
+        const currentState = typeof gameState !== 'undefined' ? gameState : state;
+        if (Number.isNaN(playerIndex) || !currentState.players[playerIndex]) return;
 
-            // Replace text with input
-            elem.innerHTML = '';
-            elem.appendChild(input);
-            input.focus();
-            input.select();
+        const currentName = currentState.players[playerIndex].name || `Leikmaður ${playerIndex + 1}`;
 
-            const saveName = () => {
-                const newName = input.value.trim() || `Leikmaður ${playerIndex + 1}`;
-                gameState.players[playerIndex].name = newName;
-                elem.textContent = newName;
-                
-                // Send name update to server
-                if (typeof ws !== 'undefined' && ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({
-                        type: 'updateName',
-                        roomId: currentRoomId,
-                        playerIndex: playerIndex,
-                        name: newName
-                    }));
-                }
-                
-                // Emit event for other components to update
-                window.dispatchEvent(new CustomEvent('playerNameChanged', { detail: { playerIndex, name: newName } }));
-            };
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentName;
+        input.className = 'player-name-input';
 
-            // Save on Enter or blur
-            input.addEventListener('blur', saveName);
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    saveName();
-                }
-                if (e.key === 'Escape') {
-                    elem.textContent = currentName;
-                }
-            });
+        target.innerHTML = '';
+        target.appendChild(input);
+        input.focus();
+        input.select();
+
+        const saveName = () => {
+            const newName = input.value.trim() || `Leikmaður ${playerIndex + 1}`;
+            currentState.players[playerIndex].name = newName;
+            target.textContent = newName;
+            target.dataset.playerIndex = playerIndex;
+
+            if (typeof ws !== 'undefined' && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'updateName',
+                    roomId: currentRoomId,
+                    playerIndex: playerIndex,
+                    name: newName
+                }));
+            }
+
+            window.dispatchEvent(new CustomEvent('playerNameChanged', { detail: { playerIndex, name: newName } }));
+        };
+
+        input.addEventListener('blur', saveName);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                saveName();
+            }
         });
     });
 }

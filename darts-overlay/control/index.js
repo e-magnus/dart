@@ -3,12 +3,6 @@
  * Sets up WebSocket connection and binds all event listeners
  * Brings together gameState, handlers, and ui modules
  */
-
-// ===== WEBSOCKET INITIALIZATION =====
-
-/**
- * Initialize WebSocket connection
- */
 function initWebSocket() {
     const wsUrl = getWebSocketURL();
     
@@ -172,7 +166,7 @@ function attachEventListeners() {
         rematchBtn.addEventListener('click', () => {
             hideGameWinOptions();
             // Reset game but keep names
-            sendResetGameToServer();
+            sendResetGameToServer(gameState.players.length);
             resetCurrentRound();
             resetRoundHistory();
             updateUI();
@@ -200,21 +194,84 @@ function attachEventListeners() {
     const startNewGameBtn = document.getElementById('start-new-game-btn');
     if (startNewGameBtn) {
         startNewGameBtn.addEventListener('click', () => {
-            const p1Name = document.getElementById('p1-name-input').value.trim();
-            const p2Name = document.getElementById('p2-name-input').value.trim();
+            const playerCount = getSelectedPlayerCount();
+            const playerNames = [];
             const gameType = document.querySelector('input[name="game-type"]:checked').value;
             const firstTo = parseInt(document.getElementById('first-to-input').value);
 
-            if (handleStartNewGame(p1Name, p2Name, gameType, firstTo)) {
+            for (let i = 0; i < playerCount; i++) {
+                const input = document.getElementById(`p${i + 1}-name-input`);
+                if (input) {
+                    playerNames.push(input.value.trim());
+                }
+            }
+
+            if (handleStartNewGame(playerNames, gameType, firstTo)) {
                 closeSettings();
                 updateUI();
             }
         });
     }
 
+    // Player count radios
+    const playerCountRadios = document.querySelectorAll('input[name="player-count"]');
+    if (playerCountRadios.length > 0) {
+        playerCountRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                updatePlayerNameInputs();
+                updateBullUpOption();
+            });
+        });
+        // Initialize on first load
+        updatePlayerNameInputs();
+        updateBullUpOption();
+    }
+
+
+function getSelectedPlayerCount() {
+    const selected = document.querySelector('input[name="player-count"]:checked');
+    const value = selected ? parseInt(selected.value, 10) : 2;
+    return Number.isNaN(value) ? 2 : value;
+}
     // Note: Player name, first-to, and game-type inputs in the New Game modal
     // are only saved when "Byrja nýjan leik" button is clicked.
     // This allows users to cancel without saving changes.
+}
+
+/**
+ * Update player name input fields based on selected player count
+ */
+function updatePlayerNameInputs() {
+    const playerCount = getSelectedPlayerCount();
+    const container = document.getElementById('player-names-container');
+    
+    if (!container) return;
+    
+    // Clear existing inputs
+    container.innerHTML = '';
+    
+    // Create inputs for each player
+    for (let i = 1; i <= playerCount; i++) {
+        const div = document.createElement('div');
+        div.className = 'settings-group';
+        div.innerHTML = `
+            <label for="p${i}-name-input">Leikmaður ${i}:</label>
+            <input type="text" id="p${i}-name-input" placeholder="Nafn">
+        `;
+        container.appendChild(div);
+    }
+}
+
+/**
+ * Show/hide bull-up option based on player count
+ */
+function updateBullUpOption() {
+    const playerCount = getSelectedPlayerCount();
+    const bullUpOption = document.getElementById('bull-up-option');
+    
+    if (bullUpOption) {
+        bullUpOption.style.display = playerCount > 2 ? 'block' : 'none';
+    }
 }
 
 // ===== KEYBOARD SUPPORT =====

@@ -100,7 +100,10 @@ function handleUndoDart() {
  */
 function handleUndoRound() {
     const activePlayer = getActivePlayerIndex();
-    const lastPlayer = 1 - activePlayer;
+    const playerCount = gameState && gameState.players ? gameState.players.length : 2;
+    const lastPlayer = playerCount > 0
+        ? (activePlayer - 1 + playerCount) % playerCount
+        : 0;
     
     // Remove from history
     removeLastScoreFromHistory(lastPlayer);
@@ -163,7 +166,7 @@ function handleResetGame() {
     if (confirm('Endurstilla allan leik?')) {
         resetCurrentRound();
         resetRoundHistory();
-        sendResetGameToServer();
+        sendResetGameToServer(gameState.players.length);
         return true;
     }
     return false;
@@ -172,10 +175,26 @@ function handleResetGame() {
 /**
  * Handle new game
  */
-function handleStartNewGame(p1Name, p2Name, gameType, firstTo) {
+function handleStartNewGame(playerNames, gameType, firstTo) {
+    // Handle both old (p1Name, p2Name) and new (array) calling conventions
+    let namesArray;
+    if (Array.isArray(playerNames)) {
+        namesArray = playerNames;
+    } else {
+        // Legacy: two string arguments
+        namesArray = [playerNames, gameType];
+        gameType = firstTo;
+        firstTo = arguments[3];
+    }
+
     // Validation
-    if (!p1Name || !p2Name) {
-        showToast('Þú verð að slá inn nöfn beggja leikmanna!');
+    if (!namesArray || namesArray.length === 0) {
+        showToast('Þú verð að slá inn nöfn leikmanna!');
+        return false;
+    }
+
+    if (namesArray.some(name => !name || !name.trim())) {
+        showToast('Þú verð að slá inn nöfn allra leikmanna!');
         return false;
     }
 
@@ -190,11 +209,16 @@ function handleStartNewGame(p1Name, p2Name, gameType, firstTo) {
     updateRoomIdDisplay();
 
     // Send updates to server
-    sendPlayerNameToServer(0, p1Name);
-    sendPlayerNameToServer(1, p2Name);
+    sendResetGameToServer(namesArray.length);
+    namesArray.forEach((name, index) => {
+        sendPlayerNameToServer(index, name);
+    });
     sendGameTypeToServer(parseInt(gameType));
-    sendResetGameToServer();
     sendFirstToToServer(firstTo);
+    const bullUpEnabled = document.getElementById('enable-bull-up');
+    if (bullUpEnabled && bullUpEnabled.checked) {
+        sendStartBullUpToServer();
+    }
 
     // Reset local state
     resetCurrentRound();
@@ -216,7 +240,7 @@ function handleUpdatePlayerName(playerIndex, newName) {
  */
 function handleUpdateFirstTo(newValue) {
     // Can't change during game
-    if (gameState.players[0].legs > 0 || gameState.players[1].legs > 0) {
+    if (gameState.players && gameState.players.some(player => player.legs > 0)) {
         showToast('Ekki er hægt að breyta þessu á meðan leikur er í gangi!');
         return false;
     }
@@ -317,12 +341,23 @@ function sendGameTypeToServer(gameType) {
 /**
  * Send reset game to server
  */
-function sendResetGameToServer() {
+function sendResetGameToServer(playerCount = 2) {
     const ws = getWebSocket();
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
     
     ws.send(JSON.stringify({
         type: 'resetGame',
+        roomId: currentRoomId,
+        playerCount: Number(playerCount)
+    }));
+}
+
+function sendStartBullUpToServer() {
+    const ws = getWebSocket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+    ws.send(JSON.stringify({
+        type: 'startBullUp',
         roomId: currentRoomId
     }));
 }
@@ -336,12 +371,14 @@ function sendResetGameToServer() {
 function handleStateUpdate(message) {
     if (!message || !message.data) return;
 
-    const previousActivePlayer = gameState.players ? (gameState.players[0].isActive ? 0 : 1) : null;
+    const previousActivePlayer = gameState.players
+        ? gameState.players.findIndex(player => player.isActive)
+        : null;
 
     // Update local game state from server payload
     updateGameState(message.data);
 
-    const currentActivePlayer = gameState.players[0].isActive ? 0 : 1;
+    const currentActivePlayer = gameState.players.findIndex(player => player.isActive);
 
     // If player changed, clear local darts
     if (previousActivePlayer !== null && previousActivePlayer !== currentActivePlayer) {
@@ -365,13 +402,9 @@ function handleStateUpdate(message) {
                 // Delay modal until animation finishes
                 setTimeout(() => {
                     showGameWinOptions(gameState.players[legWinnerIndex].name);
-                }, 5200);
+                }, 3000);
             } else {
                 triggerLegWinAnimation(legWinnerIndex, true);
-                // Delay leg win message until animation finishes
-                setTimeout(() => {
-                    showLegWinModal(`${gameState.players[legWinnerIndex].name} vann legg!`, false, legWinnerIndex);
-                }, 6200);
             }
         }, 100);
     }
@@ -402,6 +435,7 @@ if (typeof module !== 'undefined' && module.exports) {
         sendFirstToToServer,
         sendGameTypeToServer,
         sendResetGameToServer,
+        sendStartBullUpToServer,
         
         // Message handling
         handleStateUpdate

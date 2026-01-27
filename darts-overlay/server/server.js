@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const messageHandlers = require('./messageHandlers');
 
 const PORT = 8080;
 
@@ -20,12 +21,24 @@ try {
 const rooms = new Map();
 
 // Create default initial game state
-function createInitialGameState() {
+function createInitialGameState(playerCount = 2) {
+  const players = [];
+  for (let i = 0; i < playerCount; i++) {
+    players.push({
+      name: `Leikmaður ${i + 1}`,
+      score: 501,
+      legs: 0,
+      sets: 0,
+      isActive: i === 0, // First player is active
+      dartsThrown: 0,
+      totalScored: 0,
+      average: 0
+    });
+  }
+  
   return {
-    players: [
-      { name: 'Leikmaður 1', score: 501, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
-      { name: 'Leikmaður 2', score: 501, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
-    ],
+    players,
+    playerCount,
     firstTo: 3,
     startScore: 501,
     history: [],
@@ -34,7 +47,9 @@ function createInitialGameState() {
     lastLegWinner: null,
     lastSetWinner: null,
     lastGameWinner: null,
-    nextLegStartPlayer: 1 // Track who goes first in next leg (0 or 1), alternates each leg
+    nextLegStartPlayer: playerCount > 1 ? 1 : 0, // Track who goes first in next leg, rotates each leg
+    bullUpPhase: false, // Are we in bull-up phase to determine order?
+    bullUpScores: [] // Bull-up throws: [{playerIndex, score}]
   };
 }
 
@@ -138,6 +153,21 @@ function broadcast(roomId) {
   gameState.lastLegWinner = null;
   gameState.lastSetWinner = null;
   gameState.lastGameWinner = null;
+}
+
+function broadcastEvents(roomId, events) {
+  if (!events || events.length === 0) return;
+  
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
+      events.forEach(event => {
+        client.send(JSON.stringify({
+          type: 'event',
+          data: event
+        }));
+      });
+    }
+  });
 }
 
 // Get checkout suggestion for current score
@@ -258,17 +288,34 @@ function addBust(roomId, playerIndex, dartCount = 3) {
 
 // Switch active player
 function switchPlayer(gameState) {
+  const playerCount = gameState.players.length;
+  if (playerCount === 0) return;
+
   const activeIndex = gameState.players.findIndex(p => p.isActive);
-  gameState.players[activeIndex].isActive = false;
-  gameState.players[1 - activeIndex].isActive = true;
+  if (activeIndex !== -1) {
+    gameState.players[activeIndex].isActive = false;
+  }
+
+  const nextIndex = activeIndex === -1 ? 0 : (activeIndex + 1) % playerCount;
+  gameState.players[nextIndex].isActive = true;
 }
 
 // Determine who goes first in next leg (alternates between players)
 function switchPlayerAfterLegWin(gameState, legWinnerIndex) {
-  gameState.players[0].isActive = (gameState.nextLegStartPlayer === 0);
-  gameState.players[1].isActive = (gameState.nextLegStartPlayer === 1);
-  // Alternate for next leg
-  gameState.nextLegStartPlayer = 1 - gameState.nextLegStartPlayer;
+  const playerCount = gameState.players.length;
+  if (playerCount === 0) return;
+
+  const currentStart = Number.isInteger(gameState.nextLegStartPlayer)
+    ? gameState.nextLegStartPlayer
+    : 0;
+  const startIndex = ((currentStart % playerCount) + playerCount) % playerCount;
+
+  gameState.players.forEach((player, index) => {
+    player.isActive = index === startIndex;
+  });
+
+  // Rotate for next leg
+  gameState.nextLegStartPlayer = (startIndex + 1) % playerCount;
 }
 
 // Undo last action
@@ -322,15 +369,43 @@ function undo(roomId) {
 }
 
 // Reset game
-function resetGame(roomId) {
+function resetGame(roomId, playerCount = null) {
   const gameState = getOrCreateRoom(roomId);
+  const desiredPlayerCount = Math.max(
+    1,
+    Math.min(4, Number(playerCount) || gameState.players.length)
+  );
+
+  // If player count changes, rebuild state with correct number of players
+  if (desiredPlayerCount !== gameState.players.length) {
+    const newState = createInitialGameState(desiredPlayerCount);
+    newState.firstTo = gameState.firstTo || 3;
+    newState.startScore = gameState.startScore || 501;
+    rooms.set(roomId, newState);
+    broadcast(roomId);
+    return { success: true };
+  }
+
   const startScore = gameState.startScore || 501;
   
+  // Create players array dynamically based on current player count
+  const players = [];
+  for (let i = 0; i < gameState.players.length; i++) {
+    players.push({
+      name: gameState.players[i].name,
+      score: startScore,
+      legs: 0,
+      sets: 0,
+      isActive: i === 0,
+      dartsThrown: 0,
+      totalScored: 0,
+      average: 0
+    });
+  }
+  
   const newState = {
-    players: [
-      { name: gameState.players[0].name, score: startScore, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
-      { name: gameState.players[1].name, score: startScore, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
-    ],
+    players: players,
+    playerCount: gameState.players.length,
     firstTo: gameState.firstTo,
     startScore: startScore,
     history: [],
@@ -339,7 +414,9 @@ function resetGame(roomId) {
     lastLegWinner: null,
     lastSetWinner: null,
     lastGameWinner: null,
-    nextLegStartPlayer: 1 // Reset so player 2 starts leg 2 after player 1 starts leg 1
+    nextLegStartPlayer: players.length > 1 ? 1 : 0, // Reset so next player starts leg 2 after player 0 starts leg 1
+    bullUpPhase: false,
+    bullUpScores: []
   };
   
   rooms.set(roomId, newState);
@@ -351,7 +428,7 @@ function resetGame(roomId) {
 function updatePlayerName(roomId, playerIndex, newName) {
   const gameState = getOrCreateRoom(roomId);
   
-  if (playerIndex >= 0 && playerIndex < 2) {
+  if (playerIndex >= 0 && playerIndex < gameState.players.length) {
     gameState.players[playerIndex].name = newName;
     broadcast(roomId);
     return { success: true };
@@ -365,7 +442,7 @@ function updateFirstTo(roomId, value) {
   const val = parseInt(value);
   
   // Only allow changes if no legs have been played yet (fresh game)
-  if (gameState.players[0].legs > 0 || gameState.players[1].legs > 0) {
+  if (gameState.players.some(player => player.legs > 0)) {
     // Game in progress, don't allow changes
     return { success: false, reason: 'Game in progress' };
   }
@@ -454,7 +531,7 @@ wss.on('connection', (ws) => {
           break;
 
         case 'resetGame':
-          resetGame(roomId);
+          resetGame(roomId, message.playerCount);
           break;
 
         case 'updateName':
@@ -467,6 +544,26 @@ wss.on('connection', (ws) => {
 
         case 'updateGameType':
           updateGameType(roomId, message.gameType);
+          break;
+
+        case 'startBullUp':
+          {
+            const currentState = getOrCreateRoom(roomId);
+            const { newState, events } = messageHandlers.handleStartBullUp(currentState);
+            rooms.set(roomId, newState);
+            broadcastEvents(roomId, events);
+            broadcast(roomId);
+          }
+          break;
+
+        case 'bullUpThrow':
+          {
+            const currentState = getOrCreateRoom(roomId);
+            const { newState, events } = messageHandlers.handleBullUpThrow(currentState, message.playerIndex, message.score);
+            rooms.set(roomId, newState);
+            broadcastEvents(roomId, events);
+            broadcast(roomId);
+          }
           break;
 
         case 'getState':
