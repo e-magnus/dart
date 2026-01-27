@@ -18,19 +18,33 @@ function updatePlayerAverages(gameState) {
 }
 
 // Create initial game state
-function createInitialGameState() {
+function createInitialGameState(playerCount = 2) {
+  const players = [];
+  for (let i = 0; i < playerCount; i++) {
+    players.push({
+      name: `Leikmaður ${i + 1}`,
+      score: 501,
+      legs: 0,
+      sets: 0,
+      isActive: i === 0,
+      dartsThrown: 0,
+      totalScored: 0,
+      average: 0
+    });
+  }
+
   return {
-    players: [
-      { name: 'Leikmaður 1', score: 501, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
-      { name: 'Leikmaður 2', score: 501, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
-    ],
+    players,
+    playerCount,
     firstTo: 3,
     startScore: 501,
     history: [],
     gameOver: false,
     winner: null,
     lastLegWinner: null,
-    nextLegStartPlayer: 1
+    nextLegStartPlayer: 1,
+    bullUpPhase: false,
+    bullUpScores: []
   };
 }
 
@@ -71,8 +85,19 @@ function switchActivePlayer(gameState) {
     ...gameState,
     players: gameState.players.map(p => ({ ...p }))
   };
-  newState.players[0].isActive = !newState.players[0].isActive;
-  newState.players[1].isActive = !newState.players[1].isActive;
+  
+  // Find currently active player
+  const currentActiveIndex = newState.players.findIndex(p => p.isActive);
+  
+  // Deactivate current player
+  if (currentActiveIndex !== -1) {
+    newState.players[currentActiveIndex].isActive = false;
+  }
+  
+  // Activate next player (circular rotation)
+  const nextIndex = (currentActiveIndex + 1) % newState.players.length;
+  newState.players[nextIndex].isActive = true;
+  
   return newState;
 }
 

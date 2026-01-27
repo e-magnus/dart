@@ -126,6 +126,23 @@ describe('Game Logic', () => {
       expect(state.players[0].isActive).toBe(true);
       expect(switched.players[0].isActive).toBe(false);
     });
+
+    it('should rotate through multiple players', () => {
+      const state = createInitialGameState(3);
+      expect(state.players[0].isActive).toBe(true);
+
+      const next = switchActivePlayer(state);
+      expect(next.players[0].isActive).toBe(false);
+      expect(next.players[1].isActive).toBe(true);
+
+      const next2 = switchActivePlayer(next);
+      expect(next2.players[1].isActive).toBe(false);
+      expect(next2.players[2].isActive).toBe(true);
+
+      const next3 = switchActivePlayer(next2);
+      expect(next3.players[2].isActive).toBe(false);
+      expect(next3.players[0].isActive).toBe(true);
+    });
   });
 
   describe('createInitialGameState', () => {
@@ -137,6 +154,13 @@ describe('Game Logic', () => {
       expect(state.firstTo).toBe(3);
       expect(state.gameOver).toBe(false);
       expect(state.winner).toBeNull();
+    });
+
+    it('should create state for variable player count', () => {
+      const state = createInitialGameState(4);
+      expect(state.players).toHaveLength(4);
+      expect(state.players[0].isActive).toBe(true);
+      expect(state.players[3].isActive).toBe(false);
     });
 
     it('should set correct initial active player', () => {

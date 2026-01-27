@@ -29,8 +29,9 @@ let gameState = {
 };
 
 let ws;
-let lastScores = [501, 501];
-let lastDartsThrown = [0, 0];
+let lastScores = [];
+let lastDartsThrown = [];
+let lastRenderedPlayerCount = 0;
 let legWinTimer = null;
 let pendingLegUpdate = null; // { index, prevLegs, newLegs }
 let bustTimer = null;
@@ -54,6 +55,49 @@ function setTextIfChanged(el, value) {
     if (el.textContent !== next) {
         el.textContent = next;
     }
+}
+
+function clearPlayerElementCache(playerCount) {
+    for (let i = 1; i <= playerCount; i++) {
+        delete elementCache[`player${i}-section`];
+        delete elementCache[`p${i}-active`];
+        delete elementCache[`p${i}-name`];
+        delete elementCache[`p${i}-avg`];
+        delete elementCache[`p${i}-legs`];
+        delete elementCache[`p${i}-score`];
+        delete elementCache[`p${i}-darts`];
+        delete elementCache[`p${i}-checkout`];
+    }
+}
+
+function renderPlayerRows() {
+    const container = document.getElementById('player-rows');
+    if (!container || !gameState || !gameState.players) return;
+
+    const playerCount = gameState.players.length;
+    if (container.children.length === playerCount && lastRenderedPlayerCount === playerCount) {
+        return;
+    }
+
+    clearPlayerElementCache(Math.max(playerCount, lastRenderedPlayerCount));
+    container.innerHTML = '';
+
+    gameState.players.forEach((player, index) => {
+        const row = document.createElement('div');
+        row.className = `player-row player-${index + 1}`;
+        row.id = `player${index + 1}-section`;
+        row.innerHTML = `
+            <div class="col col-name"><span class="active-indicator" id="p${index + 1}-active">🎯</span><span class="player-name" id="p${index + 1}-name">${player.name}</span></div>
+            <div class="col col-avg"><span id="p${index + 1}-avg">0.0</span></div>
+            <div class="col col-legs"><span id="p${index + 1}-legs">0</span></div>
+            <div class="col col-score"><span id="p${index + 1}-score">${player.score}</span> <span class="darts-count" id="p${index + 1}-darts">(0)</span></div>
+        `;
+        container.appendChild(row);
+    });
+
+    lastRenderedPlayerCount = playerCount;
+    lastScores = new Array(playerCount).fill(undefined);
+    lastDartsThrown = new Array(playerCount).fill(0);
 }
 
 function setConnectionStatus(status) {
@@ -155,38 +199,27 @@ function updateGameState(newState) {
         pendingLegUpdate = null;
     }
 
-    // Update player names
-    setTextIfChanged(getEl('p1-name'), gameState.players[0].name);
-    setTextIfChanged(getEl('p2-name'), gameState.players[1].name);
+    renderPlayerRows();
 
-    // Update scores with animation
-    updateScoreDisplay(0);
-    updateScoreDisplay(1);
+    // Update player names, scores, averages, and legs
+    gameState.players.forEach((player, index) => {
+        setTextIfChanged(getEl(`p${index + 1}-name`), player.name);
+        updateScoreDisplay(index);
+        setTextIfChanged(getEl(`p${index + 1}-avg`), (player.average || 0).toFixed(1));
 
-    // Update averages
-    setTextIfChanged(getEl('p1-avg'), (gameState.players[0].average || 0).toFixed(1));
-    setTextIfChanged(getEl('p2-avg'), (gameState.players[1].average || 0).toFixed(1));
-
-    // Update legs, but if leg-win animation running, hold winner's legs until animation completes
-    const p1LegsEl = getEl('p1-legs');
-    const p2LegsEl = getEl('p2-legs');
-    if (pendingLegUpdate && pendingLegUpdate.index === 0) {
-        setTextIfChanged(p1LegsEl, pendingLegUpdate.prevLegs);
-        setTextIfChanged(p2LegsEl, gameState.players[1].legs);
-    } else if (pendingLegUpdate && pendingLegUpdate.index === 1) {
-        setTextIfChanged(p1LegsEl, gameState.players[0].legs);
-        setTextIfChanged(p2LegsEl, pendingLegUpdate.prevLegs);
-    } else {
-        setTextIfChanged(p1LegsEl, gameState.players[0].legs);
-        setTextIfChanged(p2LegsEl, gameState.players[1].legs);
-    }
+        const legsEl = getEl(`p${index + 1}-legs`);
+        if (pendingLegUpdate && pendingLegUpdate.index === index) {
+            setTextIfChanged(legsEl, pendingLegUpdate.prevLegs);
+        } else {
+            setTextIfChanged(legsEl, player.legs);
+        }
+    });
 
     // Update active/trophy indicator
     updateActiveOrWinnerIndicator(newState);
 
     // Update checkout suggestions
-    updateCheckoutSuggestion(0);
-    updateCheckoutSuggestion(1);
+    gameState.players.forEach((_, index) => updateCheckoutSuggestion(index));
 
     // Update heading to show game mode
     updateGameHeading();
@@ -227,44 +260,41 @@ function updateScoreDisplay(playerIndex) {
  * Update active player indicator
  */
 function updateActiveOrWinnerIndicator(state) {
-    const p1Row = document.getElementById('player1-section');
-    const p2Row = document.getElementById('player2-section');
-    const p1Icon = document.getElementById('p1-active');
-    const p2Icon = document.getElementById('p2-active');
+    if (!state || !state.players) return;
+
+    const rows = state.players.map((_, index) => document.getElementById(`player${index + 1}-section`));
+    const icons = state.players.map((_, index) => document.getElementById(`p${index + 1}-active`));
 
     if (state.gameOver && typeof state.winner === 'number') {
         const winnerIndex = state.winner;
-        // Mark winner row and show trophy
-        if (winnerIndex === 0) {
-            p1Row.classList.add('winner');
-            p2Row.classList.remove('winner');
-            p1Row.classList.remove('active');
-            p2Row.classList.remove('active');
-            p1Icon.textContent = '🏆';
-            p2Icon.textContent = '';
-        } else {
-            p2Row.classList.add('winner');
-            p1Row.classList.remove('winner');
-            p1Row.classList.remove('active');
-            p2Row.classList.remove('active');
-            p2Icon.textContent = '🏆';
-            p1Icon.textContent = '';
-        }
+        rows.forEach((row, index) => {
+            if (!row) return;
+            if (index === winnerIndex) {
+                row.classList.add('winner');
+                row.classList.remove('active');
+            } else {
+                row.classList.remove('winner');
+                row.classList.remove('active');
+            }
+        });
+        icons.forEach((icon, index) => {
+            if (!icon) return;
+            icon.textContent = index === winnerIndex ? '🏆' : '';
+        });
     } else {
-        // Normal active dart display
-        p1Row.classList.remove('winner');
-        p2Row.classList.remove('winner');
-        if (gameState.players[0].isActive) {
-            p1Row.classList.add('active');
-            p2Row.classList.remove('active');
-            p1Icon.textContent = '🎯';
-            p2Icon.textContent = '🎯';
-        } else {
-            p1Row.classList.remove('active');
-            p2Row.classList.add('active');
-            p1Icon.textContent = '🎯';
-            p2Icon.textContent = '🎯';
-        }
+        rows.forEach((row, index) => {
+            if (!row) return;
+            if (state.players[index].isActive) {
+                row.classList.add('active');
+            } else {
+                row.classList.remove('active');
+            }
+            row.classList.remove('winner');
+        });
+        icons.forEach((icon, index) => {
+            if (!icon) return;
+            icon.textContent = state.players[index].isActive ? '🎯' : '';
+        });
     }
 }
 

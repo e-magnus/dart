@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pila-control-v1';
+const CACHE_NAME = 'pila-control-v2';
 const ASSETS = [
   '/control/control.html',
   '/control/control.css',
@@ -12,6 +12,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -25,7 +26,7 @@ self.addEventListener('activate', (event) => {
           .filter((key) => key !== CACHE_NAME)
           .map((key) => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
 });
 

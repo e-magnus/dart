@@ -1,4 +1,11 @@
-const { handleAddScore, handleSwitchPlayer, handleUpdatePlayerName, handleResetGame } = require('../messageHandlers');
+const {
+  handleAddScore,
+  handleSwitchPlayer,
+  handleUpdatePlayerName,
+  handleResetGame,
+  handleBullUpThrow,
+  handleStartBullUp
+} = require('../messageHandlers');
 const { createInitialGameState } = require('../gameLogic');
 
 describe('Message Handlers', () => {
@@ -86,6 +93,14 @@ describe('Message Handlers', () => {
       expect(gameState.players[1].isActive).toBe(true);
     });
 
+    it('should rotate active player for more than two players', () => {
+      const state = createInitialGameState(3);
+      const { gameState } = handleSwitchPlayer(state);
+      expect(gameState.players[0].isActive).toBe(false);
+      expect(gameState.players[1].isActive).toBe(true);
+      expect(gameState.players[2].isActive).toBe(false);
+    });
+
     it('should emit player_switched event', () => {
       const { events } = handleSwitchPlayer(initialState);
       expect(events[0].type).toBe('player_switched');
@@ -135,6 +150,19 @@ describe('Message Handlers', () => {
       expect(gameState.gameOver).toBe(false);
     });
 
+    it('should reset game state for multiple players', () => {
+      const state = createInitialGameState(3);
+      state.players[0].score = 100;
+      state.players[1].score = 200;
+      state.players[2].score = 300;
+      const { gameState } = handleResetGame(state);
+      expect(gameState.players).toHaveLength(3);
+      expect(gameState.players[0].score).toBe(501);
+      expect(gameState.players[1].score).toBe(501);
+      expect(gameState.players[2].score).toBe(501);
+      expect(gameState.players[0].isActive).toBe(true);
+    });
+
     it('should preserve player names', () => {
       const state = {
         ...initialState,
@@ -151,6 +179,38 @@ describe('Message Handlers', () => {
     it('should emit game_reset event', () => {
       const { events } = handleResetGame(initialState);
       expect(events[0].type).toBe('game_reset');
+    });
+  });
+
+  describe('bull-up flow', () => {
+    it('should start bull-up phase', () => {
+      const { gameState, events } = handleStartBullUp(initialState);
+      expect(gameState.bullUpPhase).toBe(true);
+      expect(gameState.bullUpScores).toHaveLength(0);
+      expect(gameState.players.every(p => p.isActive === false)).toBe(true);
+      expect(events[0].type).toBe('bull_up_started');
+    });
+
+    it('should record bull-up throws and reorder players', () => {
+      let state = createInitialGameState(3);
+      state = handleStartBullUp(state).gameState;
+
+      let result = handleBullUpThrow(state, 0, 25);
+      expect(result.gameState.bullUpScores).toHaveLength(1);
+      expect(result.events[0].type).toBe('bull_up_throw');
+
+      result = handleBullUpThrow(result.gameState, 1, 50);
+      result = handleBullUpThrow(result.gameState, 2, 10);
+
+      expect(result.events.some(e => e.type === 'bull_up_complete')).toBe(true);
+      expect(result.gameState.bullUpPhase).toBe(false);
+      expect(result.gameState.bullUpScores).toHaveLength(0);
+      expect(result.gameState.players[0].isActive).toBe(true);
+    });
+
+    it('should reject bull-up throw when not in phase', () => {
+      const { events } = handleBullUpThrow(initialState, 0, 25);
+      expect(events[0].type).toBe('error');
     });
   });
 });

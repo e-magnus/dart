@@ -53,10 +53,9 @@ function handleAddScore(gameState, dartValue) {
         newPlayer.score = newState.startScore;
         newPlayer.dartsThrown = 0;
         newPlayer.totalScored = 0;
-        // Switch active player
-        const temp = newState.players[0].isActive;
-        newState.players[0].isActive = newState.players[1].isActive;
-        newState.players[1].isActive = temp;
+        // Switch active player (supports N players)
+        const switched = switchActivePlayer(newState);
+        newState.players = switched.players;
         events.push({ type: 'next_leg', data: { activePlayerIndex: newState.players.findIndex(p => p.isActive) } });
       }
     } else {
@@ -74,10 +73,7 @@ function handleSwitchPlayer(gameState) {
   if (gameState.gameOver) {
     return { gameState, events: [{ type: 'error', data: 'Game is over' }] };
   }
-  const newState = JSON.parse(JSON.stringify(gameState));
-  const temp = newState.players[0].isActive;
-  newState.players[0].isActive = newState.players[1].isActive;
-  newState.players[1].isActive = temp;
+  const newState = switchActivePlayer(JSON.parse(JSON.stringify(gameState)));
   const activeIdx = newState.players.findIndex(p => p.isActive);
   return { gameState: newState, events: [{ type: 'player_switched', data: { activePlayerIndex: activeIdx } }] };
 }
@@ -102,27 +98,89 @@ function handleResetGame(gameState) {
   const startScore = gameState.startScore || 501;
   const firstTo = gameState.firstTo || 3;
   const names = gameState.players.map(p => p.name);
+  const players = names.map((name, index) => ({
+    name,
+    score: startScore,
+    legs: 0,
+    sets: 0,
+    isActive: index === 0,
+    dartsThrown: 0,
+    totalScored: 0,
+    average: 0
+  }));
 
   const newState = {
-    players: [
-      { name: names[0], score: startScore, legs: 0, sets: 0, isActive: true, dartsThrown: 0, totalScored: 0, average: 0 },
-      { name: names[1], score: startScore, legs: 0, sets: 0, isActive: false, dartsThrown: 0, totalScored: 0, average: 0 }
-    ],
+    players,
     firstTo,
     startScore,
     history: [],
     gameOver: false,
     winner: null,
     lastLegWinner: null,
-    nextLegStartPlayer: 1
+    nextLegStartPlayer: 1,
+    bullUpPhase: false,
+    bullUpScores: []
   };
 
   return { gameState: newState, events: [{ type: 'game_reset', data: { startScore, firstTo } }] };
+}
+
+/**
+ * Handle bull-up throw to determine player order
+ * Score is calculated as distance from bull (50 = bullseye, 25 = outer bull, etc.)
+ */
+function handleBullUpThrow(gameState, playerIndex, score) {
+  if (!gameState.bullUpPhase) {
+    return { gameState, events: [{ type: 'error', data: 'Not in bull-up phase' }] };
+  }
+
+  const newState = JSON.parse(JSON.stringify(gameState));
+  
+  // Record this player's bull-up throw
+  newState.bullUpScores.push({ playerIndex, score });
+  
+  const events = [{ type: 'bull_up_throw', data: { playerIndex, score } }];
+  
+  // Check if all players have thrown
+  if (newState.bullUpScores.length === newState.players.length) {
+    // Sort by score (highest first)
+    const sorted = [...newState.bullUpScores].sort((a, b) => b.score - a.score);
+    
+    // Reorder players based on bull-up results
+    const newPlayers = sorted.map((entry, index) => ({
+      ...newState.players[entry.playerIndex],
+      isActive: index === 0 // First player is active
+    }));
+    
+    newState.players = newPlayers;
+    newState.bullUpPhase = false;
+    newState.bullUpScores = [];
+    
+    events.push({ type: 'bull_up_complete', data: { playerOrder: sorted.map(s => s.playerIndex) } });
+  }
+  
+  return { gameState: newState, events };
+}
+
+/**
+ * Start bull-up phase
+ */
+function handleStartBullUp(gameState) {
+  const newState = JSON.parse(JSON.stringify(gameState));
+  newState.bullUpPhase = true;
+  newState.bullUpScores = [];
+  
+  // Deactivate all players during bull-up
+  newState.players.forEach(p => p.isActive = false);
+  
+  return { gameState: newState, events: [{ type: 'bull_up_started', data: {} }] };
 }
 
 module.exports = {
   handleAddScore,
   handleSwitchPlayer,
   handleUpdatePlayerName,
-  handleResetGame
+  handleResetGame,
+  handleBullUpThrow,
+  handleStartBullUp
 };
