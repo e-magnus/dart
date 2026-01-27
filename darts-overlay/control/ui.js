@@ -10,11 +10,11 @@ function updateConnectionStatus(isConnected) {
     if (isConnected) {
         indicator.textContent = '🟢';
         indicator.classList.remove('disconnected');
-        text.textContent = 'Tenging';
+        text.textContent = 'Tengt';
     } else {
         indicator.textContent = '🔴';
         indicator.classList.add('disconnected');
-        text.textContent = 'Ótengir';
+        text.textContent = 'Ótengt';
     }
 }
 
