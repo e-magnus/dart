@@ -129,9 +129,12 @@ function broadcast(roomId) {
   const gameState = getOrCreateRoom(roomId);
   updatePlayerAverages(gameState);
 
+  const activeIndex = gameState.players.findIndex(p => p.isActive);
+  const activePlayer = activeIndex >= 0 ? gameState.players[activeIndex] : null;
+
   const stateWithCheckout = {
     ...gameState,
-    checkoutSuggestion: getCheckoutSuggestion(gameState.players[gameState.players.findIndex(p => p.isActive)].score),
+    checkoutSuggestion: activePlayer ? getCheckoutSuggestion(activePlayer.score) : null,
     legWin: gameState.lastLegWinner !== null,
     setWin: gameState.lastSetWinner !== null,
     gameWin: gameState.lastGameWinner !== null,
@@ -568,11 +571,13 @@ wss.on('connection', (ws) => {
 
         case 'getState':
           const state = getOrCreateRoom(roomId);
+          const activeIndex = state.players.findIndex(p => p.isActive);
+          const activePlayer = activeIndex >= 0 ? state.players[activeIndex] : null;
           ws.send(JSON.stringify({
             type: 'stateUpdate',
             data: {
               ...state,
-              checkoutSuggestion: getCheckoutSuggestion(state.players[state.players.findIndex(p => p.isActive)].score)
+              checkoutSuggestion: activePlayer ? getCheckoutSuggestion(activePlayer.score) : null
             }
           }));
           break;

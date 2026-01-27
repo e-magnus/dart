@@ -195,16 +195,9 @@ function attachEventListeners() {
     if (startNewGameBtn) {
         startNewGameBtn.addEventListener('click', () => {
             const playerCount = getSelectedPlayerCount();
-            const playerNames = [];
+            const playerNames = getPlayerNamesInOrder(playerCount);
             const gameType = document.querySelector('input[name="game-type"]:checked').value;
             const firstTo = parseInt(document.getElementById('first-to-input').value);
-
-            for (let i = 0; i < playerCount; i++) {
-                const input = document.getElementById(`p${i + 1}-name-input`);
-                if (input) {
-                    playerNames.push(input.value.trim());
-                }
-            }
 
             if (handleStartNewGame(playerNames, gameType, firstTo)) {
                 closeSettings();
@@ -219,12 +212,10 @@ function attachEventListeners() {
         playerCountRadios.forEach(radio => {
             radio.addEventListener('change', () => {
                 updatePlayerNameInputs();
-                updateBullUpOption();
             });
         });
         // Initialize on first load
         updatePlayerNameInputs();
-        updateBullUpOption();
     }
 
 
@@ -249,29 +240,78 @@ function updatePlayerNameInputs() {
     
     // Clear existing inputs
     container.innerHTML = '';
+
+    const list = document.createElement('div');
+    list.className = 'player-order-list';
+    container.appendChild(list);
     
     // Create inputs for each player
     for (let i = 1; i <= playerCount; i++) {
-        const div = document.createElement('div');
-        div.className = 'settings-group';
-        div.innerHTML = `
-            <label for="p${i}-name-input">Leikmaður ${i}:</label>
-            <input type="text" id="p${i}-name-input" placeholder="Nafn">
+        const item = document.createElement('div');
+        item.className = 'player-order-item';
+        item.draggable = true;
+        item.dataset.playerIndex = String(i - 1);
+        item.innerHTML = `
+            <span class="drag-handle" aria-hidden="true">☰</span>
+            <input type="text" class="player-name-input-field" id="p${i}-name-input" placeholder="Leikmaður ${i}">
         `;
-        container.appendChild(div);
+        list.appendChild(item);
     }
+
+    enablePlayerOrderDragAndDrop(list);
 }
 
-/**
- * Show/hide bull-up option based on player count
- */
-function updateBullUpOption() {
-    const playerCount = getSelectedPlayerCount();
-    const bullUpOption = document.getElementById('bull-up-option');
-    
-    if (bullUpOption) {
-        bullUpOption.style.display = playerCount > 2 ? 'block' : 'none';
-    }
+function getPlayerNamesInOrder(playerCount) {
+    const container = document.getElementById('player-names-container');
+    if (!container) return [];
+
+    const inputs = container.querySelectorAll('.player-name-input-field');
+    const names = Array.from(inputs)
+        .slice(0, playerCount)
+        .map(input => input.value.trim());
+
+    return names;
+}
+
+function enablePlayerOrderDragAndDrop(list) {
+    let draggedItem = null;
+
+    list.querySelectorAll('.player-order-item').forEach(item => {
+        item.addEventListener('dragstart', (event) => {
+            draggedItem = item;
+            item.classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'move';
+        });
+
+        item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+            draggedItem = null;
+        });
+    });
+
+    list.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        const afterElement = getDragAfterElement(list, event.clientY);
+        if (!draggedItem) return;
+        if (afterElement == null) {
+            list.appendChild(draggedItem);
+        } else {
+            list.insertBefore(draggedItem, afterElement);
+        }
+    });
+}
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.player-order-item:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset, element: child };
+        }
+        return closest;
+    }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
 }
 
 // ===== KEYBOARD SUPPORT =====

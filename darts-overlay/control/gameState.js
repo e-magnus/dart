@@ -191,7 +191,8 @@ function toggleMultiplier(mult) {
  * Get active player index
  */
 function getActivePlayerIndex() {
-    return gameState.players[0].isActive ? 0 : 1;
+    const idx = gameState.players.findIndex(player => player.isActive);
+    return idx >= 0 ? idx : 0;
 }
 
 /**
@@ -203,10 +204,25 @@ function getActivePlayer() {
 }
 
 /**
+ * Get next player index for bull-up (first player who hasn't thrown yet)
+ */
+function getNextBullUpPlayerIndex() {
+    const playerCount = gameState && gameState.players ? gameState.players.length : 0;
+    if (playerCount === 0) return 0;
+
+    const taken = new Set((gameState.bullUpScores || []).map(entry => entry.playerIndex));
+    for (let i = 0; i < playerCount; i++) {
+        if (!taken.has(i)) return i;
+    }
+    return 0;
+}
+
+/**
  * Update game state from server
  */
 function updateGameState(newState) {
     gameState = newState;
+    ensureRoundHistorySize();
 }
 
 /**
@@ -247,10 +263,20 @@ function getRoundHistory(playerIndex) {
  * Reset round history
  */
 function resetRoundHistory() {
-    roundHistory = {
-        0: [],
-        1: []
-    };
+    roundHistory = {};
+    const playerCount = gameState && gameState.players ? gameState.players.length : 2;
+    for (let i = 0; i < playerCount; i++) {
+        roundHistory[i] = [];
+    }
+}
+
+function ensureRoundHistorySize() {
+    const playerCount = gameState && gameState.players ? gameState.players.length : 2;
+    for (let i = 0; i < playerCount; i++) {
+        if (!roundHistory[i]) {
+            roundHistory[i] = [];
+        }
+    }
 }
 
 // ===== WEBSOCKET STATE =====
@@ -313,6 +339,7 @@ if (typeof module !== 'undefined' && module.exports) {
         // Game state
         getActivePlayerIndex,
         getActivePlayer,
+        getNextBullUpPlayerIndex,
         updateGameState,
         getCheckoutSuggestion,
         

@@ -11,6 +11,18 @@
  * Handle number input (1-20, 25, 50)
  */
 function handleNumberInput(value) {
+    if (gameState && gameState.bullUpPhase) {
+        if (getCurrentDartCount() >= 1) {
+            return false;
+        }
+
+        const multiplier = getCurrentMultiplier();
+        addDartToRound(value, multiplier);
+        submitRound();
+        setCurrentMultiplier(1);
+        return true;
+    }
+
     // Can't throw if 3 darts already thrown
     if (getCurrentDartCount() >= 3) {
         console.log('Umferð búin, bíddu eftir næstu umferð...');
@@ -56,6 +68,17 @@ function handleNumberInput(value) {
  * Handle miss (0 points)
  */
 function handleMiss() {
+    if (gameState && gameState.bullUpPhase) {
+        if (getCurrentDartCount() >= 1) {
+            return false;
+        }
+
+        addDartToRound(0, 1);
+        submitRound();
+        setCurrentMultiplier(1);
+        return true;
+    }
+
     if (getCurrentDartCount() >= 3) {
         console.log('Umferð búin, bíddu á nýrri umferð...');
         return false;
@@ -125,6 +148,13 @@ function submitRound() {
     // Must have at least 1 dart
     if (getCurrentDartCount() === 0) {
         return false;
+    }
+
+    if (gameState && gameState.bullUpPhase) {
+        const bullUpPlayerIndex = getNextBullUpPlayerIndex();
+        sendBullUpThrowToServer(bullUpPlayerIndex, totalScore);
+        resetCurrentRound();
+        return true;
     }
 
     // Check for bust
@@ -215,10 +245,7 @@ function handleStartNewGame(playerNames, gameType, firstTo) {
     });
     sendGameTypeToServer(parseInt(gameType));
     sendFirstToToServer(firstTo);
-    const bullUpEnabled = document.getElementById('enable-bull-up');
-    if (bullUpEnabled && bullUpEnabled.checked) {
-        sendStartBullUpToServer();
-    }
+    // Player order is handled in the UI list
 
     // Reset local state
     resetCurrentRound();
@@ -362,6 +389,18 @@ function sendStartBullUpToServer() {
     }));
 }
 
+function sendBullUpThrowToServer(playerIndex, score) {
+    const ws = getWebSocket();
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+    ws.send(JSON.stringify({
+        type: 'bullUpThrow',
+        roomId: currentRoomId,
+        playerIndex,
+        score
+    }));
+}
+
 // ===== WEBSOCKET MESSAGE HANDLER =====
 
 /**
@@ -374,6 +413,7 @@ function handleStateUpdate(message) {
     const previousActivePlayer = gameState.players
         ? gameState.players.findIndex(player => player.isActive)
         : null;
+    const previousBullUpPhase = gameState.bullUpPhase;
 
     // Update local game state from server payload
     updateGameState(message.data);
@@ -390,6 +430,11 @@ function handleStateUpdate(message) {
     // Refresh UI
     updateUI();
     updatePlayerStatusDisplay();
+
+    if (gameState.bullUpPhase && !previousBullUpPhase) {
+        showToast('Bull-up: hver leikmaður kastar einni pílu');
+        resetCurrentRound();
+    }
 
     // Handle leg/game win flags from server state
     if (message.data.legWin && message.data.legWinner !== undefined) {
@@ -436,6 +481,7 @@ if (typeof module !== 'undefined' && module.exports) {
         sendGameTypeToServer,
         sendResetGameToServer,
         sendStartBullUpToServer,
+        sendBullUpThrowToServer,
         
         // Message handling
         handleStateUpdate

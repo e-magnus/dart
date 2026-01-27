@@ -33,8 +33,8 @@ function updatePlayerStatusDisplay() {
     }
 
     scoreElement.textContent = gameState.players
-        .map((player, index) => `L${index + 1}:${player.legs}`)
-        .join(' • ');
+        .map(player => player.legs)
+        .join(' - ');
 }
 
 /**
@@ -247,10 +247,12 @@ function updatePlayerScores() {
         if (nameEl) nameEl.textContent = player.name;
     });
 
+    const bullUpIndex = gameState.bullUpPhase ? getNextBullUpPlayerIndex() : null;
+
     document.querySelectorAll('.player-card').forEach(card => {
         const index = parseInt(card.dataset.playerIndex, 10);
         if (Number.isNaN(index) || !gameState.players[index]) return;
-        if (gameState.players[index].isActive) {
+        if (gameState.players[index].isActive || (bullUpIndex !== null && index === bullUpIndex)) {
             card.classList.add('active');
         } else {
             card.classList.remove('active');
@@ -588,7 +590,6 @@ function syncInputsWithGameState() {
     const playerCount = gameState.players.length;
     const firstToInput = document.getElementById('first-to-input');
     const playerCountRadios = document.querySelectorAll('input[name="player-count"]');
-    const bullUpCheckbox = document.getElementById('enable-bull-up');
 
     if (playerCountRadios && playerCountRadios.length > 0) {
         playerCountRadios.forEach(radio => {
@@ -609,11 +610,6 @@ function syncInputsWithGameState() {
     }
 
     if (firstToInput) firstToInput.value = gameState.firstTo;
-    if (bullUpCheckbox) bullUpCheckbox.checked = false;
-
-    if (typeof updateBullUpOption === 'function') {
-        updateBullUpOption();
-    }
 }
 
 /**
