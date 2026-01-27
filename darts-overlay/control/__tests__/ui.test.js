@@ -15,10 +15,10 @@ describe('UI flow - bust modal', () => {
   });
 
   test('shows reason message when provided', () => {
-    showBustModal(50, 50, 'Þú verð að enda með double eða bull (25/50)!');
+    showBustModal(50, 50, 'Þú verð að enda með tvöfaldan eða bull (25/50)!');
 
     expect(document.getElementById('bustPlayerName').textContent).toBe('Leikmaður 1');
-    expect(document.getElementById('bustMessage').textContent).toBe('Þú verð að enda með double eða bull (25/50)!');
+    expect(document.getElementById('bustMessage').textContent).toBe('Þú verð að enda með tvöfaldan eða bull (25/50)!');
     expect(document.getElementById('bustModal').classList.contains('show')).toBe(true);
   });
 

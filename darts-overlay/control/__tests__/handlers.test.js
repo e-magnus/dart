@@ -22,7 +22,7 @@ describe('Game rules - invalid double finish bust', () => {
     const result = handleNumberInput(20);
 
     expect(result).toBe(false);
-    expect(global.showBustModal).toHaveBeenCalledWith(40, 40, 'Þú verð að enda með double eða bull (25/50)!');
+    expect(global.showBustModal).toHaveBeenCalledWith(40, 40, 'Þú verð að enda með tvöfaldan eða bull (25/50)!');
     expect(global.showToast).not.toHaveBeenCalled();
   });
 });
