@@ -190,6 +190,8 @@ function attachEventListeners() {
     const cancelNewGameBtn = document.getElementById('cancel-new-game-btn');
     if (cancelNewGameBtn) {
         cancelNewGameBtn.addEventListener('click', () => {
+            // Reset form to current game state before closing
+            syncInputsWithGameState();
             closeSettings();
         });
     }
@@ -210,38 +212,9 @@ function attachEventListeners() {
         });
     }
 
-    // Player name inputs
-    const p1NameInput = document.getElementById('p1-name-input');
-    const p2NameInput = document.getElementById('p2-name-input');
-    
-    if (p1NameInput) {
-        p1NameInput.addEventListener('change', (e) => {
-            handleUpdatePlayerName(0, e.target.value);
-        });
-    }
-    
-    if (p2NameInput) {
-        p2NameInput.addEventListener('change', (e) => {
-            handleUpdatePlayerName(1, e.target.value);
-        });
-    }
-
-    // First-to input
-    const firstToInput = document.getElementById('first-to-input');
-    if (firstToInput) {
-        firstToInput.addEventListener('change', (e) => {
-            if (!handleUpdateFirstTo(parseInt(e.target.value))) {
-                syncInputsWithGameState();
-            }
-        });
-    }
-
-    // Game type selection
-    document.querySelectorAll('input[name="game-type"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            sendGameTypeToServer(parseInt(e.target.value));
-        });
-    });
+    // Note: Player name, first-to, and game-type inputs in the New Game modal
+    // are only saved when "Byrja nýjan leik" button is clicked.
+    // This allows users to cancel without saving changes.
 }
 
 // ===== KEYBOARD SUPPORT =====
