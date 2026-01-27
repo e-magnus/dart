@@ -617,7 +617,7 @@ function syncInputsWithGameState() {
  */
 function openOverlay() {
     const overlayUrl = `${window.location.origin}/overlay/overlay.html?roomId=${currentRoomId}`;
-    window.open(overlayUrl, 'obs-overlay', 'width=1920,height=1080,resizable=yes,scrollbars=no');
+    window.open(overlayUrl, 'obs-overlay', 'width=700,height=500,resizable=yes,scrollbars=no');
 }
 
 /**

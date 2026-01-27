@@ -260,8 +260,8 @@ function hideBustModal() {
 
 // Open overlay in new window
 function openOverlay() {
-    const width = 1920;
-    const height = 1080;
+    const width = 700;
+    const height = 500;
     const left = (screen.width - width) / 2;
     const top = (screen.height - height) / 2;
     

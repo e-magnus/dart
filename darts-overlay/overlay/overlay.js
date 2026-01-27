@@ -459,7 +459,7 @@ function applyObsMode() {
 function setInitialWindowSize() {
     try {
         if (typeof window.resizeTo === 'function') {
-            window.resizeTo(700, 350);
+            window.resizeTo(700, 500);
         }
     } catch (err) {
         console.warn('Could not resize window:', err);
