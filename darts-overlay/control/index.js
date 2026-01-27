@@ -317,6 +317,9 @@ document.addEventListener('DOMContentLoaded', () => {
     attachEventListeners();
     attachKeyboardListeners();
     
+    // Initialize player name click-to-edit functionality
+    initPlayerNameEditing(gameState);
+    
     // Initial UI update
     updateUI();
     updatePlayerStatusDisplay();

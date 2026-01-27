@@ -92,6 +92,54 @@ function setPlayerCardActive(playerIndex) {
     });
 }
 
+function initPlayerNameEditing(gameState) {
+    const playerNameElements = [
+        { elem: document.getElementById('p1-name'), playerIndex: 0 },
+        { elem: document.getElementById('p2-name'), playerIndex: 1 }
+    ];
+
+    playerNameElements.forEach(({ elem, playerIndex }) => {
+        if (!elem) return;
+
+        elem.addEventListener('click', () => {
+            if (elem.querySelector('input')) return; // Already editing
+
+            const currentName = gameState.players[playerIndex].name || `Leikmaður ${playerIndex + 1}`;
+            
+            // Create input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.className = 'player-name-input';
+
+            // Replace text with input
+            elem.innerHTML = '';
+            elem.appendChild(input);
+            input.focus();
+            input.select();
+
+            const saveName = () => {
+                const newName = input.value.trim() || `Leikmaður ${playerIndex + 1}`;
+                gameState.players[playerIndex].name = newName;
+                elem.textContent = newName;
+                // Emit event for other components to update
+                window.dispatchEvent(new CustomEvent('playerNameChanged', { detail: { playerIndex, name: newName } }));
+            };
+
+            // Save on Enter or blur
+            input.addEventListener('blur', saveName);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveName();
+                }
+                if (e.key === 'Escape') {
+                    elem.textContent = currentName;
+                }
+            });
+        });
+    });
+}
+
 module.exports = {
     updatePlayerScores,
     updatePlayerAverages,
@@ -102,5 +150,6 @@ module.exports = {
     clearDartTracker,
     updateCheckoutDisplay,
     updateRoundNumber,
-    setPlayerCardActive
+    setPlayerCardActive,
+    initPlayerNameEditing
 };
