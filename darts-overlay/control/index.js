@@ -322,6 +322,13 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePlayerStatusDisplay();
     
     console.log('Control panel initialized');
+
+    // Register service worker for PWA installability
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/control/sw.js', { scope: '/control/' })
+            .then(() => console.log('Service worker registered'))
+            .catch((err) => console.warn('Service worker registration failed', err));
+    }
 });
 
 // ===== EXPORTS (for testing) =====
