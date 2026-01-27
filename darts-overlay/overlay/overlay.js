@@ -62,7 +62,7 @@ function setConnectionStatus(status) {
 
     statusEl.className = `overlay-status ${status}`;
     if (status === 'connected') {
-        statusEl.textContent = 'Tengt';
+        statusEl.textContent = ''; // Hide status when connected
     } else if (status === 'reconnecting') {
         statusEl.textContent = 'Endurtengir...';
     } else if (status === 'error') {
