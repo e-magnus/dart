@@ -27,6 +27,18 @@ function generateRoomId() {
     return result;
 }
 
+function loadRoomIdFromStorage() {
+    return localStorage.getItem('darts_roomId');
+}
+
+function saveRoomIdToStorage(roomId) {
+    localStorage.setItem('darts_roomId', roomId);
+}
+
+function clearRoomIdFromStorage() {
+    localStorage.removeItem('darts_roomId');
+}
+
 function getWebSocketURL() {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host || 'localhost:8080';
@@ -38,7 +50,14 @@ function getWebSocketURL() {
 
 function initializeState() {
     if (!currentRoomId) {
-        currentRoomId = generateRoomId();
+        // Try to load room ID from localStorage
+        currentRoomId = loadRoomIdFromStorage();
+        if (!currentRoomId) {
+            // Only generate new room ID if none exists in storage
+            currentRoomId = generateRoomId();
+        }
+        // Save room ID to localStorage
+        saveRoomIdToStorage(currentRoomId);
     }
     gameState = JSON.parse(JSON.stringify(initialGameState));
     return { roomId: currentRoomId, state: gameState };

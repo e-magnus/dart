@@ -184,6 +184,11 @@ function handleStartNewGame(p1Name, p2Name, gameType, firstTo) {
         return false;
     }
 
+    // Generate new room ID for this new game
+    currentRoomId = generateRoomId();
+    saveRoomIdToStorage(currentRoomId);
+    updateRoomIdDisplay();
+
     // Send updates to server
     sendPlayerNameToServer(0, p1Name);
     sendPlayerNameToServer(1, p2Name);
@@ -347,6 +352,7 @@ function handleStateUpdate(message) {
 
     // Refresh UI
     updateUI();
+    updatePlayerStatusDisplay();
 
     // Handle leg/game win flags from server state
     if (message.data.legWin && message.data.legWinner !== undefined) {

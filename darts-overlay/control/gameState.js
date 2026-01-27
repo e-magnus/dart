@@ -81,9 +81,31 @@ function getWebSocketURL() {
  */
 function initRoomId() {
     if (!currentRoomId) {
-        currentRoomId = generateRoomId();
+        // Try to load from localStorage
+        currentRoomId = localStorage.getItem('darts_roomId');
+        if (!currentRoomId) {
+            // Generate new if not in localStorage
+            currentRoomId = generateRoomId();
+        }
+        // Save to localStorage
+        localStorage.setItem('darts_roomId', currentRoomId);
     }
     return currentRoomId;
+}
+
+/**
+ * Save room ID to localStorage
+ */
+function saveRoomIdToStorage(roomId) {
+    localStorage.setItem('darts_roomId', roomId);
+    currentRoomId = roomId;
+}
+
+/**
+ * Clear room ID from localStorage (for new game)
+ */
+function clearRoomIdFromStorage() {
+    localStorage.removeItem('darts_roomId');
 }
 
 // ===== CURRENT ROUND STATE MANAGEMENT =====

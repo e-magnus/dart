@@ -18,6 +18,7 @@ function initWebSocket() {
         
         ws.addEventListener('open', () => {
             console.log('WebSocket connected');
+            updateConnectionStatus(true);
             
             // Send join message
             ws.send(JSON.stringify({
@@ -44,11 +45,13 @@ function initWebSocket() {
         
         ws.addEventListener('error', (error) => {
             console.error('WebSocket error:', error);
+            updateConnectionStatus(false);
             showToast('Tenging tapaðist - reynum aftur...');
         });
         
         ws.addEventListener('close', () => {
             console.log('WebSocket disconnected');
+            updateConnectionStatus(false);
             // Attempt reconnect
             setTimeout(initWebSocket, 3000);
         });
@@ -298,7 +301,11 @@ function attachKeyboardListeners() {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize room ID
     initRoomId();
+    updateRoomIdDisplay();
     displayRoomId();
+    
+    // Initialize connection status
+    updateConnectionStatus(false);
     
     // Initialize WebSocket
     initWebSocket();
@@ -312,6 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initial UI update
     updateUI();
+    updatePlayerStatusDisplay();
     
     console.log('Control panel initialized');
 });

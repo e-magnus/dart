@@ -18,8 +18,24 @@ function generateRoomId() {
     return result;
 }
 
+function loadRoomIdFromStorage() {
+    return localStorage.getItem('darts_roomId');
+}
+
+function saveRoomIdToStorage(roomId) {
+    localStorage.setItem('darts_roomId', roomId);
+}
+
+function clearRoomIdFromStorage() {
+    localStorage.removeItem('darts_roomId');
+}
+
 // Room ID for this game session
-let currentRoomId = generateRoomId();
+let currentRoomId = loadRoomIdFromStorage();
+if (!currentRoomId) {
+    currentRoomId = generateRoomId();
+    saveRoomIdToStorage(currentRoomId);
+}
 
 // Checkout suggestions table (all legal finishes from 2-170)
 // In darts, checkout MUST end with a double (D)
@@ -347,6 +363,9 @@ function initWebSocket() {
 
 // Update UI display
 function updateUI() {
+    // Update room ID display
+    document.getElementById('room-id').textContent = currentRoomId;
+    
     // Calculate round score for current darts
     let roundScore = 0;
     currentDarts.forEach(dart => {
@@ -1040,6 +1059,10 @@ function startNewGame() {
         showToast('Leggir til að vinna verð að vera á milli 1 og 20!');
         return;
     }
+
+    // Generate new room ID for this new game
+    currentRoomId = generateRoomId();
+    saveRoomIdToStorage(currentRoomId);
 
     // Send game setup to server
     ws.send(JSON.stringify({

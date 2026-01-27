@@ -55,10 +55,6 @@
         <!-- Header -->
         <div class="panel-header">
             <div class="round-info">UMFERÐ <span id="round-number">1</span></div>
-            <div class="room-info">
-                <span class="room-label">HERBERGI:</span>
-                <span class="room-id" id="room-id">------</span>
-            </div>
             <div class="header-controls">
                 <button id="live-indicator" class="live-btn" type="button">OBS HLEKKUR</button>
                 <button id="new-game-btn" class="new-game-btn" type="button">Nýr leikur</button>
@@ -173,6 +169,22 @@
         <div class="control-buttons">
             <button id="undo-dart-btn" class="btn-control btn-undo-inactive" disabled>AFTURKALLA PÍLU</button>
             <div class="control-spacer" aria-hidden="true"></div>
+        </div>
+
+        <!-- Footer Banner with Room ID and Status -->
+        <div class="panel-footer">
+            <div class="footer-status">
+                <span class="connection-indicator" id="connection-indicator">🟢</span>
+                <span class="connection-text" id="connection-text">Tenging</span>
+            </div>
+            <div class="footer-separator">|</div>
+            <span class="room-label">ID:</span>
+            <span class="room-id" id="room-id">------</span>
+            <div class="footer-separator">|</div>
+            <div class="player-status">
+                <span class="status-label">Staða:</span>
+                <span id="player-status-score" class="player-score-text">1 - 0</span>
+            </div>
         </div>
     </div>
 

@@ -1,8 +1,44 @@
 /**
- * UI Module
- * Handles all DOM manipulation and visual updates
- * Pure functions that take state and update corresponding elements
+ * Update connection status indicator
  */
+function updateConnectionStatus(isConnected) {
+    const indicator = document.getElementById('connection-indicator');
+    const text = document.getElementById('connection-text');
+    
+    if (!indicator || !text) return;
+    
+    if (isConnected) {
+        indicator.textContent = '🟢';
+        indicator.classList.remove('disconnected');
+        text.textContent = 'Tenging';
+    } else {
+        indicator.textContent = '🔴';
+        indicator.classList.add('disconnected');
+        text.textContent = 'Ótengir';
+    }
+}
+
+/**
+ * Update player status display in footer
+ */
+function updatePlayerStatusDisplay() {
+    const scoreElement = document.getElementById('player-status-score');
+    if (!scoreElement || !gameState || !gameState.players) return;
+
+    const p1 = gameState.players[0];
+    const p2 = gameState.players[1];
+    scoreElement.textContent = `${p1.legs} - ${p2.legs}`;
+}
+
+/**
+ * Update room ID display in footer
+ */
+function updateRoomIdDisplay() {
+    const roomElement = document.getElementById('room-id');
+    if (!roomElement) return;
+    
+    roomElement.textContent = currentRoomId || '------';
+}
 
 // ===== TOAST NOTIFICATIONS =====
 
