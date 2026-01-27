@@ -34,8 +34,9 @@ function handleNumberInput(value) {
         
         if (!validDoubleFinish) {
             // Invalid finish, bust
-            showToast('Þú verð að enda með double eða bull (25/50)!');
+            const reasonMessage = 'Þú verð að enda með double eða bull (25/50)!';
             sendBustToServer(getActivePlayerIndex(), getCurrentDartCount());
+            showBustModal(activePlayer.score, totalScore, reasonMessage);
             resetCurrentRound();
             return false;
         }
@@ -139,9 +140,8 @@ function submitRound() {
         const validDoubleFinish = lastDart.multiplier === 2 || finishedOnBull;
         
         if (!validDoubleFinish) {
-            showToast('Þú verð að enda með double eða bull (25/50)!');
             sendBustToServer(activePlayerIndex, getCurrentDartCount());
-            showBustModal(activePlayer.score, totalScore);
+            showBustModal(activePlayer.score, totalScore, 'Þú verð að enda með double eða bull (25/50)!');
             resetCurrentRound();
             return false;
         }
@@ -368,7 +368,10 @@ function handleStateUpdate(message) {
                 }, 5200);
             } else {
                 triggerLegWinAnimation(legWinnerIndex, true);
-                showLegWinModal(`${gameState.players[legWinnerIndex].name} vann legg!`, false, legWinnerIndex);
+                // Delay leg win message until animation finishes
+                setTimeout(() => {
+                    showLegWinModal(`${gameState.players[legWinnerIndex].name} vann legg!`, false, legWinnerIndex);
+                }, 6200);
             }
         }, 100);
     }

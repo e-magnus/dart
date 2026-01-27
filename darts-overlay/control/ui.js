@@ -50,7 +50,9 @@ function showToast(message) {
     if (!toast) return;
 
     const winAnimation = document.getElementById('win-animation');
-    const shouldDelay = winAnimation && winAnimation.classList.contains('active');
+    const legAnimation = document.getElementById('leg-win-animation');
+    const shouldDelayWin = winAnimation && winAnimation.classList.contains('active');
+    const shouldDelayLeg = legAnimation && legAnimation.classList.contains('active');
 
     const show = () => {
         toast.textContent = message;
@@ -61,8 +63,9 @@ function showToast(message) {
         }, 3000);
     };
 
-    if (shouldDelay) {
-        setTimeout(show, 5200);
+    if (shouldDelayWin || shouldDelayLeg) {
+        const delayMs = Math.max(shouldDelayWin ? 5200 : 0, shouldDelayLeg ? 6200 : 0);
+        setTimeout(show, delayMs);
         return;
     }
     show();
@@ -126,7 +129,7 @@ function hideGameWinOptions() {
 /**
  * Show bust modal
  */
-function showBustModal(currentScore, scoreThrown) {
+function showBustModal(currentScore, scoreThrown, reasonMessage = '') {
     const modal = document.getElementById('bustModal');
     const playerName = document.getElementById('bustPlayerName');
     const message = document.getElementById('bustMessage');
@@ -135,7 +138,11 @@ function showBustModal(currentScore, scoreThrown) {
     
     const activePlayer = getActivePlayer();
     playerName.textContent = activePlayer.name;
-    message.textContent = `Þú þættir ${scoreThrown} sem myndu gera skórann ${currentScore - scoreThrown}. Ögn of hið mikið!`;
+    if (reasonMessage) {
+        message.textContent = reasonMessage;
+    } else {
+        message.textContent = `${currentScore - scoreThrown}`;
+    }
     
     modal.classList.add('show');
 }
