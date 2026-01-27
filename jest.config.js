@@ -1,9 +1,10 @@
 module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/server/__tests__/**/*.test.js', '**/?(*.)+(spec|test).js'],
-  testPathIgnorePatterns: ['/control/__tests__/', '/node_modules/'],
+  testPathIgnorePatterns: ['/node_modules/'],
   collectCoverageFrom: [
     'server/**/*.js',
+    'control/**/*.js',
     '!node_modules/**',
     '!**/*.test.js'
   ],
