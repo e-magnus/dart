@@ -47,6 +47,7 @@ function handleNumberInput(value) {
         if (!validDoubleFinish) {
             // Invalid finish, bust
             const reasonMessage = 'Þú verð að enda með tvöfaldan eða bull (25/50)!';
+            addScoreToHistory(getActivePlayerIndex(), 0);
             sendBustToServer(getActivePlayerIndex(), getCurrentDartCount());
             showBustModal(activePlayer.score, totalScore, reasonMessage);
             resetCurrentRound();
@@ -160,6 +161,7 @@ function submitRound() {
     // Check for bust
     const newScore = activePlayer.score - totalScore;
     if (newScore < 0 || newScore === 1) {
+        addScoreToHistory(activePlayerIndex, 0);
         sendBustToServer(activePlayerIndex, getCurrentDartCount());
         showBustModal(activePlayer.score, totalScore);
         resetCurrentRound();
@@ -173,6 +175,7 @@ function submitRound() {
         const validDoubleFinish = lastDart.multiplier === 2 || finishedOnBull;
         
         if (!validDoubleFinish) {
+            addScoreToHistory(activePlayerIndex, 0);
             sendBustToServer(activePlayerIndex, getCurrentDartCount());
             showBustModal(activePlayer.score, totalScore, 'Þú verð að enda með tvöfaldan eða bull (25/50)!');
             resetCurrentRound();
