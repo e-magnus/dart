@@ -633,7 +633,7 @@ html, body {
 }
 
 .btn-close {
-    background: #999;
+    background: #dc2626;
     color: white;
     margin: 0;
 }
@@ -645,7 +645,7 @@ html, body {
 }
 
 .btn-close:hover {
-    background: #777;
+    background: #b91c1c;
 }
 
 .btn-save:hover {
