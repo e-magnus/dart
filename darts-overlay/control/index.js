@@ -186,6 +186,14 @@ function attachEventListeners() {
         });
     }
 
+    // Cancel new game button
+    const cancelNewGameBtn = document.getElementById('cancel-new-game-btn');
+    if (cancelNewGameBtn) {
+        cancelNewGameBtn.addEventListener('click', () => {
+            closeSettings();
+        });
+    }
+
     // Start new game button
     const startNewGameBtn = document.getElementById('start-new-game-btn');
     if (startNewGameBtn) {
