@@ -124,7 +124,7 @@ body.game-animation-active .leg-toast {
 }
 
 .overlay-status.connected {
-    opacity: 0.4;
+    display: none;
 }
 
 .overlay-status.reconnecting {
