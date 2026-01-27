@@ -13,19 +13,24 @@ Restructure control panel and server logic to improve testability, maintainabili
 - Create consistent action/reducer pattern
 - Test all state transitions without WebSocket
 
-## Phase 3: Control Panel Refactor
-- Separate DOM manipulation from game state
-- Create state management layer
-- Split control.js into:
-  - `gameState.js` (state management)
-  - `handlers.js` (event handlers)
-  - `ui.js` (DOM updates)
-  - `index.js` (initialization)
+## Phase 3: Control Panel Refactor (✅ DONE)
+- ✅ Separated DOM manipulation from game state
+- ✅ Created state management layer
+- ✅ Split control.js into:
+  - ✅ `gameState.js` (state management)
+  - ✅ `handlers.js` (event handlers)
+  - ✅ `ui.js` (DOM updates)
+  - ✅ `index.js` (initialization)
+- ✅ Updated HTML script references
+- ✅ Verified all functionality works
+- ✅ See [PHASE3_COMPLETION.md](darts-overlay/control/PHASE3_COMPLETION.md) for details
 
-## Phase 4: Server Integration Tests
-- Test game state mutations on incoming messages
-- Verify room isolation
-- Test win conditions and leg resets
+## Phase 4: Server Integration Tests (✅ DONE)
+- ✅ Test game state mutations on incoming messages
+- ✅ Verify room isolation
+- ✅ Test win conditions and leg resets
+- ✅ Added comprehensive integration suite: [darts-overlay/server/__tests__/integration.test.js](darts-overlay/server/__tests__/integration.test.js)
+- ✅ All tests passing (`npm test`)
 
 ## Testing Strategy
 - Unit tests for all pure functions

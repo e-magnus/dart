@@ -12,7 +12,7 @@ function getWebSocketURL() {
 // Get room ID from URL parameter
 function getRoomIdFromURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('room') || 'default';
+    return params.get('room') || params.get('roomId') || 'default';
 }
 
 const WS_URL = getWebSocketURL();
