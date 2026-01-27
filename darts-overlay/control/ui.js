@@ -394,12 +394,12 @@ function updateNumberPadDisplay() {
         submitBtn.classList.remove('btn-submit-inactive');
         submitBtn.classList.add('btn-submit-active');
     } else if (dartCount > 0 && dartCount < 3) {
-        // Check if already won
         const activePlayer = getActivePlayer();
         const totalScore = getCurrentRoundScore();
         const newScore = activePlayer.score - totalScore;
+        const isBust = newScore < 0 || newScore === 1;
 
-        if (newScore === 0) {
+        if (newScore === 0 || isBust) {
             submitBtn.disabled = false;
             submitBtn.classList.remove('btn-submit-inactive');
             submitBtn.classList.add('btn-submit-active');

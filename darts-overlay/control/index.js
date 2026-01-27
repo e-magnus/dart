@@ -249,16 +249,20 @@ function updatePlayerNameInputs() {
     for (let i = 1; i <= playerCount; i++) {
         const item = document.createElement('div');
         item.className = 'player-order-item';
-        item.draggable = true;
+        item.draggable = false;
         item.dataset.playerIndex = String(i - 1);
         item.innerHTML = `
             <span class="drag-handle" aria-hidden="true">☰</span>
             <input type="text" class="player-name-input-field" id="p${i}-name-input" placeholder="Leikmaður ${i}">
+            <div class="order-buttons" aria-label="Röðun">
+                <button type="button" class="order-btn order-up" aria-label="Færa upp">▲</button>
+                <button type="button" class="order-btn order-down" aria-label="Færa niður">▼</button>
+            </div>
         `;
         list.appendChild(item);
     }
 
-    enablePlayerOrderDragAndDrop(list);
+    enablePlayerOrderButtons(list);
 }
 
 function getPlayerNamesInOrder(playerCount) {
@@ -298,6 +302,44 @@ function enablePlayerOrderDragAndDrop(list) {
         } else {
             list.insertBefore(draggedItem, afterElement);
         }
+    });
+}
+
+function enablePlayerOrderButtons(list) {
+    const moveItem = (item, direction) => {
+        if (!item) return;
+        if (direction === 'up') {
+            const prev = item.previousElementSibling;
+            if (prev) {
+                list.insertBefore(item, prev);
+            }
+            return;
+        }
+
+        const next = item.nextElementSibling;
+        if (next) {
+            list.insertBefore(next, item);
+        }
+    };
+
+    const bindButton = (button, direction) => {
+        const handler = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const item = button.closest('.player-order-item');
+            moveItem(item, direction);
+        };
+
+        button.addEventListener('click', handler);
+        button.addEventListener('touchstart', handler, { passive: false });
+    };
+
+    list.querySelectorAll('.order-up').forEach(button => {
+        bindButton(button, 'up');
+    });
+
+    list.querySelectorAll('.order-down').forEach(button => {
+        bindButton(button, 'down');
     });
 }
 
