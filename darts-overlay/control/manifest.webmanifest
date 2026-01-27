@@ -4,8 +4,8 @@
   "start_url": "/control/control.html",
   "scope": "/control/",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#111827",
+  "background_color": "#26d07c",
+  "theme_color": "#26d07c",
   "icons": [
     {
       "src": "/control/icons/icon-192.png",
