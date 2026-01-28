@@ -252,7 +252,6 @@ function updatePlayerNameInputs() {
         item.draggable = false;
         item.dataset.playerIndex = String(i - 1);
         item.innerHTML = `
-            <span class="drag-handle" aria-hidden="true">☰</span>
             <input type="text" class="player-name-input-field" id="p${i}-name-input" placeholder="Leikmaður ${i}">
             <div class="order-buttons" aria-label="Röðun">
                 <button type="button" class="order-btn order-up" aria-label="Færa upp">▲</button>

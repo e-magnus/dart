@@ -682,10 +682,7 @@ html, body {
 }
 
 .drag-handle {
-    font-size: 18px;
-    color: #666;
-    cursor: grab;
-    user-select: none;
+    display: none;
 }
 
 .order-buttons {
