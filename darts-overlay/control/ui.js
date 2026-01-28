@@ -440,9 +440,8 @@ function updateCheckoutSuggestion() {
 function updateGummiLilliAdvice() {
     const adviceContainer = document.getElementById('gummi-lilli-advice');
     const adviceText = document.getElementById('gummi-lilli-text');
-    const optimalText = document.getElementById('gummi-lilli-optimal');
     
-    if (!adviceContainer || !adviceText || !optimalText) {
+    if (!adviceContainer || !adviceText) {
         return;
     }
     
