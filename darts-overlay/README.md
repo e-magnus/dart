@@ -1,292 +1,395 @@
-# Darts 501 Overlay System
+# Darts 501 Overlay Kerfi
 
-A complete, offline darts scoreboard and OBS broadcast overlay system for competitive dart matches. Built with Node.js and WebSockets for real-time synchronization.
+Fullkomið, offline darts stigatafla og OBS sendingar-overlay kerfi fyrir samkeppnisleiki í dartum. Byggt með Node.js og WebSockets fyrir rauntíma samstillingu.
 
-## Features
+## Eiginleikar
 
-✅ **Broadcast Quality**
-- 1920x1080 OBS-compatible transparent overlay
-- TV-style dark scoreboard design with green/yellow styling
-- Smooth CSS animations (win flash, score updates, player indicator)
+✅ **Útsendingargæði**
+- 1920x1080 OBS-samhæft gagnsætt overlay
+- Sjónvarps-stíll dökk stigatafla með grænu/gulu útliti
+- Mjúkar CSS animations (sigur-blikk, stig uppfærslur, leikmaður-vísar)
 
-✅ **Game Logic**
-- Darts 501 with configurable first-to (legs)
-- 2-player support with live name editing
-- Bust detection (score < 0 or = 1)
-- Exact checkout detection with automatic leg reset
-- Win animation when game is completed
+✅ **Leikjareglur**
+- Darts 501 með stillanlegum "fyrsta-til" (legs)
+- 2-4 leikmanna stuðningur með lifandi nafna breytingum
+- Bust greining (stig < 0 eða = 1)
+- Nákvæm checkout greining með sjálfvirkri leg endurstillingu
+- Sigur animation þegar leik lýkur
 
-✅ **Smart Features**
-- Real-time checkout suggestions (≤170) from local lookup table
-- Live score updates via WebSocket
-- Active player indicator with pulse animation
-- Undo last throw functionality
-- Manual reset option
+✅ **Gáfaðir Eiginleikar**
+- **Gumma Lilla gefur góð ráð 🎯** - rauntíma checkout tillögur (2-170) frá staðbundinni töflu
+- Lifandi stig uppfærslur í gegnum WebSocket
+- Virkur leikmaður vísar með púls animation
+- Afturkalla síðasta kast
+- Handvirk endurstilling
 
-✅ **Control Panel**
-- Quick score buttons (0, 3, 6...180)
-- Custom score input with keyboard support
-- Hotkeys: Numbers (input), Space (switch), U (undo), Enter (submit)
-- Edit player names live
-- Edit first-to value
-- Current game status display
+✅ **Stjórnborð**
+- Fljótlegir stiga takkar (0, 3, 6...180)
+- Sérsniðin stiga innsláttur með lyklaborðs stuðningi
+- Flýtilyklar: Tölur (innsláttur), Space (skipta), U (afturkalla), Enter (staðfesta)
+- Breyta nöfnum leikmanna í rauntíma
+- Breyta "fyrsta-til" gildi
+- Núverandi leikjastaða sýning
 
 ✅ **100% Offline**
-- No cloud services
-- No external APIs or dependencies
-- Everything runs on localhost
-- Works completely offline once started
+- Engar skýjaþjónustur
+- Engin ytri API eða tengsl
+- Allt keyrir á localhost
+- Virkar algjörlega offline þegar ræst
 
-## System Requirements
+## Kerfiskröfur
 
-- **Windows 11** (also works on Windows 10, macOS, Linux)
+- **Windows 11** (virkar einnig á Windows 10, macOS, Linux)
 - **Node.js** 14+ (https://nodejs.org/)
-- **OBS Studio** (https://obsproject.com/) - for broadcast overlay
+- **OBS Studio** (https://obsproject.com/) - fyrir sendingar-overlay
 
-## Installation
+## Uppsetning
 
-1. **Extract the project** to your desired location
-2. **Open Command Prompt** or PowerShell in the project directory
-3. **Install dependencies:**
-   ```
+1. **Afþjappaðu verkefnið** á þína æskilegu staðsetningu
+2. **Opnaðu Command Prompt** eða PowerShell í verkefnamöppunni
+3. **Settu upp dependencies:**
+   ```bash
    npm install
    ```
 
-## Quick Start
+## Fljótleg Byrjun
 
-### Option 1: Using the Batch File (Windows)
-Simply double-click `start.bat` - it will:
-- Start the WebSocket server
-- Open the control panel in your browser
-- Display connection instructions
+### Val 1: Nota Batch File (Windows)
+Einfaldlega tvísmelltu á `start.bat` - það mun:
+- Ræsa WebSocket serverinn
+- Opna stjórnborðið í vafranum þínum
+- Sýna tengingar leiðbeiningar
 
-### Option 2: Manual Start
+### Val 2: Handvirk Ræsing
 ```bash
 npm start
 ```
 
-This starts the server at `ws://127.0.0.1:8080`
+Þetta ræsir serverinn á `ws://127.0.0.1:8080`
 
-## Usage
+## Notkun
 
-### 1. Start the Server
+### 1. Ræstu Serverinn
 ```bash
 npm start
 ```
-You should see:
+Þú ættir að sjá:
 ```
-Darts Overlay Server running at ws://127.0.0.1:8080
+Darts Overlay Server running
+  Local:    ws://127.0.0.1:8080
+  Network:  ws://0.0.0.0:8080
 Press Ctrl+C to stop
 ```
 
-### 2. Open Control Panel
-Navigate to: `file:///path/to/darts-overlay/control/control.html`
+### 2. Opnaðu Stjórnborðið
+Farðu á: `file:///path/to/darts-overlay/control/control.html`
 
-Or let `start.bat` open it automatically.
+Eða láttu `start.bat` opna það sjálfkrafa.
 
-### 3. Set Up OBS Overlay
-1. Open OBS Studio
-2. In your scene, add a **Browser** source:
+### 3. Settu upp OBS Overlay
+1. Opnaðu OBS Studio
+2. Í senunni þinni, bættu við **Browser** source:
    - **URL:** `file:///path/to/darts-overlay/overlay/overlay.html`
    - **Width:** 1920
    - **Height:** 1080
-   - Check "Use custom frame rate"
-3. The overlay is transparent - layer it over your game/stream content
-4. Start streaming/recording!
+   - Hakaðu við "Use custom frame rate"
+3. Overlay-ið er gagnsætt - lagaðu það yfir leik/straum efnið þitt
+4. Byrjaðu að senda/taka upp!
 
-## Control Panel Guide
+## Stjórnborð Leiðarvísir
 
-### Score Input
-- **Quick buttons:** Click for common scores (0, 3, 6, 9... 180)
-- **Manual input:** Type any number 0-180, press Enter
-- **Hotkeys:**
-  - `0`-`9`: Type digits
-  - `Enter`: Confirm score
-  - `Space`: Switch to next player
-  - `U`: Undo last throw
+### Stiga Innsláttur
+- **Fljótlegir takkar:** Smelltu fyrir algeng stig (0, 3, 6, 9... 180)
+- **Handvirkur innsláttur:** Sláðu inn hvaða tölu sem er 0-180, ýttu á Enter
+- **Flýtilyklar:**
+  - `0`-`9`: Slá inn tölustafi
+  - `Enter`: Staðfesta stig
+  - `Space`: Skipta yfir á næsta leikmann
+  - `U`: Afturkalla síðasta kast
 
-### Player Settings
-- Edit player names anytime (updates live)
-- Change "First To" value (1-20 legs)
-- Reset entire game with confirmation
+### Leikmaðar Stillingar
+- Breyttu nöfnum leikmanna hvenær sem er (uppfærist í rauntíma)
+- Breyttu "Fyrsta Til" gildi (1-20 legs)
+- Endurstilltu allan leik með staðfestingu
 
-### Status Display
-Shows current active player, score, legs won, and game status.
+### Staða Sýning
+Sýnir núverandi virkan leikmann, stig, legs unnið, og leikjarstöðu.
 
-## Game Rules Implemented
+### Gumma Lilla 🎯
+- Virkjaðu í nýjum leik með því að haka við "Gumma Lilla gefur góð ráð 🎯"
+- Fær checkout tillögur fyrir stig 2-170
+- Sýnir "Gumma Lilla ráðlegur þér að skora sem flest stig!" þegar engin checkout eru möguleg
+- Uppfærist sjálfkrafa eftir hvert kast
+- Bogey numbers (159, 162, 163, 165, 166, 168, 169) sýna uppsetningu í stað beinna útganga
+
+## Leikjareglur
 
 **Darts 501:**
-- Players start at 501 points
-- Each throw reduces score
-- First player to exactly 0 wins the leg
-- Bust: Score < 0 or = 1 → throw doesn't count, stay at same score
-- Score = 1 is invalid (can't finish on double)
-- Winning leg requires exact checkout
-- After each leg win, score resets to 501
-- First to N legs wins the match
+- Leikmenn byrja með 501 stig
+- Hvert kast dregur frá stigum
+- Fyrsti leikmaðurinn til nákvæmlega 0 vinnur leg-ið
+- Bust: Stig < 0 eða = 1 → kastið telur ekki, sitja áfram á sömu stigum
+- Stig = 1 er ógilt (get ekki klárað á tvöfaldri)
+- Að vinna leg krefst nákvæmrar checkout
+- Eftir hvert leg sigur, endurstillast stig á 501
+- Fyrsti til N legs vinnur leikinn
 
-## Overlay Display
+## Overlay Sýning
 
-The OBS overlay shows:
-- **Player names** with editable live names
-- **Current scores** (remaining points)
-- **Legs won** for each player
-- **Active player indicator** (pulsing green dot)
-- **Checkout suggestion** (e.g., "T20 T20 Bull")
-- **Win animation** when game ends
-- **First-to value** in center
+OBS overlay-ið sýnir:
+- **Nöfn leikmanna** með breytanleg rauntíma nöfn
+- **Núverandi stig** (stig sem eftir eru)
+- **Legs unnið** fyrir hvern leikmann
+- **Virkur leikmaður vísar** (púlsandi grænn punktur)
+- **Gumma Lilla tillaga** (t.d., "**T20**, **T20**, **DB**" með feitletruðum tölum)
+- **Sigur animation** þegar leik lýkur
+- **Fyrsta-til gildi** í miðju
 
-Colors:
-- Green (#00ff00) - Primary
-- Yellow (#ffff00) - Highlights/suggestions
-- Dark background - TV-style
+Litir:
+- Grænn (#26d07c) - Aðal
+- Gulur (#ffff00) - Áherslur/tillögur
+- Dökkur bakgrunnur - Sjónvarps-stíll
 
-## File Structure
+## Skráarskipan
 
 ```
 darts-overlay/
 ├─ server/
-│  ├─ server.js           # WebSocket server + game logic
-│  └─ checkouts.json      # Checkout suggestions (2-170)
+│  ├─ server.js              # WebSocket server
+│  ├─ gameLogic.js            # Leikjareglu útfærsla
+│  ├─ messageHandlers.js      # WebSocket skilaboða handlers
+│  ├─ websocketDispatcher.js  # Message routing
+│  └─ __tests__/              # Server testar
 ├─ overlay/
-│  ├─ overlay.html        # OBS browser source
-│  ├─ overlay.css         # TV-style design + animations
-│  └─ overlay.js          # WebSocket client
+│  ├─ overlay.html            # OBS browser source
+│  ├─ overlay.css             # Sjónvarps-stíll hönnun + animations
+│  ├─ overlay.js              # WebSocket client
+│  └─ __tests__/              # Overlay testar
 ├─ control/
-│  ├─ control.html        # Score input UI
-│  ├─ control.css         # Modern dark theme
-│  └─ control.js          # Game control logic
-├─ package.json           # Dependencies
-├─ start.bat              # Windows launcher
-└─ README.md              # This file
+│  ├─ control.html            # Stiga innsláttur UI
+│  ├─ control.css             # Nútímalegur dökkur þema
+│  ├─ control.js              # Leikja stjórnar rökfræði
+│  ├─ checkoutAdvice.js       # Gumma Lilla checkout töflur (2-170)
+│  ├─ gameState.js            # Staða stjórnun
+│  ├─ handlers.js             # Event handlers
+│  ├─ ui.js                   # UI uppfærslur
+│  └─ __tests__/              # Control testar
+├─ package.json               # Dependencies
+├─ jest.config.js             # Test stillingar
+├─ start.bat                  # Windows launcher
+└─ README.md                  # Þessi skrá
 ```
 
-## Keyboard Shortcuts (Control Panel)
+## Lyklaborðs Flýtilyklar (Stjórnborð)
 
-| Key | Action |
-|-----|--------|
-| `0`-`9` + `Enter` | Input custom score |
-| `Space` | Switch active player |
-| `U` | Undo last throw |
-| `Enter` | Submit score |
+| Lykill | Aðgerð |
+|--------|--------|
+| `0`-`9` + `Enter` | Slá inn sérsniðin stig |
+| `Space` | Skipta um virkan leikmann |
+| `U` | Afturkalla síðasta kast |
+| `Enter` | Staðfesta stig |
 
 ## WebSocket API
 
-The server communicates via WebSocket on port 8080.
+Serverinn samskiptar í gegnum WebSocket á port 8080.
 
-### Client → Server Messages
+### Client → Server Skilaboð
 
-**Add Score**
+**Bæta við Stigum**
 ```json
-{ "type": "score", "playerIndex": 0, "value": 20 }
+{ 
+  "type": "score", 
+  "playerIndex": 0, 
+  "value": 60, 
+  "darts": 3 
+}
 ```
 
-**Switch Player**
+**Skipta um Leikmann**
 ```json
 { "type": "switchPlayer" }
 ```
 
-**Undo Last Action**
+**Afturkalla Síðustu Aðgerð**
 ```json
 { "type": "undo" }
 ```
 
-**Reset Game**
+**Endurstilla Leik**
 ```json
 { "type": "resetGame" }
 ```
 
-**Update Player Name**
+**Uppfæra Nafn Leikmanns**
 ```json
-{ "type": "updateName", "playerIndex": 0, "name": "John" }
+{ 
+  "type": "updateName", 
+  "playerIndex": 0, 
+  "name": "Jón Jónsson" 
+}
 ```
 
-**Update First-To**
+**Uppfæra Fyrsta-Til**
 ```json
-{ "type": "updateFirstTo", "value": 5 }
+{ 
+  "type": "updateFirstTo", 
+  "value": 5 
+}
 ```
 
-### Server → Client Messages
+**Uppfæra Leiktegund**
+```json
+{ 
+  "type": "updateGameType", 
+  "value": "501" 
+}
+```
 
-**State Update**
+### Server → Client Skilaboð
+
+**Staða Uppfærsla**
 ```json
 {
   "type": "stateUpdate",
   "data": {
     "players": [
-      { "name": "Player 1", "score": 501, "legs": 0, "isActive": true },
-      { "name": "Player 2", "score": 501, "legs": 0, "isActive": false }
+      { 
+        "name": "Leikmaður 1", 
+        "score": 441, 
+        "legs": 1, 
+        "isActive": true,
+        "totalScored": 60,
+        "dartsThrown": 3,
+        "average": 60.0
+      },
+      { 
+        "name": "Leikmaður 2", 
+        "score": 501, 
+        "legs": 0, 
+        "isActive": false,
+        "totalScored": 0,
+        "dartsThrown": 0,
+        "average": 0
+      }
     ],
-    "firstTo": 5,
+    "firstTo": 3,
+    "gameType": "501",
     "gameOver": false,
     "winner": null,
-    "checkoutSuggestion": "T20 T20 Bull",
     "history": []
   }
 }
 ```
 
-## Troubleshooting
+## Bilanaleit
 
-**Q: Overlay is blank in OBS**
-- Ensure server is running: `npm start`
-- Check browser console in OBS (right-click source → Filters → Show in Interact)
-- Verify URL is correct
-- Try opening overlay.html in regular browser first
+**S: Overlay er autt í OBS**
+- Gakktu úr skugga um að serverinn sé að keyra: `npm start`
+- Athugaðu browser console í OBS (hægri-smelltu á source → Interact)
+- Staðfestu að URL sé rétt
+- Reyndu að opna overlay.html í venjulegum vafra fyrst
 
-**Q: Control panel won't connect**
-- Start the server first: `npm start`
-- Check that port 8080 is not in use
-- Try opening DevTools console (F12) to see connection errors
+**S: Stjórnborð tengist ekki**
+- Ræstu serverinn fyrst: `npm start`
+- Athugaðu að port 8080 sé ekki í notkun
+- Reyndu að opna DevTools console (F12) til að sjá tengingar villur
 
-**Q: Scores not updating**
-- Refresh both control panel and OBS source
-- Restart the server
+**S: Stig uppfærast ekki**
+- Endurnýjaðu bæði stjórnborð og OBS source
+- Endurræstu serverinn
 
-**Q: "Port already in use" error**
-- Another app is using port 8080
-- Change the PORT in server.js to something else (e.g., 8081)
+**S: "Port already in use" villa**
+- Annað forrit er að nota port 8080
+- Breyttu PORT í server/server.js í eitthvað annað (t.d., 8081)
 
-## Performance Notes
+**S: Gumma Lilla sýnir ekki ráð**
+- Gakktu úr skugga um að checkbox sé hakað við í "Nýr Leikur" modal
+- Endurnýjaðu síðuna og byrjaðu nýjan leik
+- Athugaðu browser console fyrir villur
 
-- Runs at 60fps capable with smooth WebSocket updates
-- Minimal CPU/GPU usage (CSS animations only, no video encoding)
-- ~50KB total data for all assets
-- Works on standard Windows 11 laptop hardware
+## Afkasta Athugasemdir
 
-## Customization
+- Keyrir á 60fps hæfni með mjúkum WebSocket uppfærslum
+- Lágmarks CPU/GPU notkun (CSS animations eingöngu, engin video encoding)
+- ~100KB heildar gögn fyrir allar eignir
+- Virkar á venjulegum Windows 11 fartölvu vélbúnaði
 
-### Change Server Port
-Edit `server/server.js` line 5:
+## Sérsníða
+
+### Breyta Server Port
+Breyttu `server/server.js`:
 ```javascript
-const PORT = 8080; // Change this
+const PORT = 8080; // Breyttu þessu
 ```
 
-Then update WebSocket URLs in:
-- `overlay/overlay.js` line 1
-- `control/control.js` line 1
+Uppfærðu síðan WebSocket URLs í:
+- `overlay/overlay.js`
+- `control/control.js`
 
-### Modify Overlay Colors
-Edit `overlay/overlay.css` - search for color values:
-- `#00ff00` = Green
-- `#ffff00` = Yellow
-- Adjust as needed
+### Breyta Overlay Litum
+Breyttu `overlay/overlay.css` - leitaðu að litum gildum:
+- `#26d07c` = Grænn (aðal litur)
+- `#ffff00` = Gulur (áherslur)
+- Aðlagaðu eftir þörfum
 
-### Adjust Overlay Size
-OBS browser source settings - change Width/Height
+### Breyta Gumma Lilla Ráðum
+Breyttu `control/checkoutAdvice.js` til að sérsníða checkout tillögur fyrir hvert stig (2-170).
 
-## License
+### Aðlaga Overlay Stærð
+OBS browser source stillingar - breyttu Width/Height
 
-MIT License - Use freely for personal and commercial projects
+## Testar
 
-## Support
+Verkefnið inniheldur ítarlega test suite með 128+ testum:
 
-For issues or questions:
-1. Check the Troubleshooting section above
-2. Review the README and documentation
-3. Check browser console (F12) for errors
-4. Restart the server and refresh pages
+```bash
+# Keyra alla testa
+npm test
+
+# Keyra ákveðið test
+npm test -- checkoutAdvice.test.js
+
+# Keyra testa með coverage
+npm test -- --coverage
+```
+
+**Test þekja:**
+- ✅ **gameLogic.test.js** - Leikjareglur og rökfræði
+- ✅ **messageHandlers.test.js** - Skilaboða handlers
+- ✅ **websocketDispatcher.test.js** - Message routing
+- ✅ **integration.test.js** - Heildstæðir leikja testar
+- ✅ **checkoutAdvice.test.js** - Gumma Lilla (18 testar)
+  - Öll gildi 2-170
+  - Edge cases og bogey numbers
+  - Data structure validation
+- ✅ **ui.test.js** - UI aðgerðir
+- ✅ **handlers.test.js** - Event handlers
+- ✅ **rules.test.js** - Leikjareglur edge cases
+
+## Leyfi
+
+MIT License - Notaðu frjálslega fyrir persónuleg og viðskiptaverkefni
+
+## Stuðningur
+
+Fyrir vandamál eða spurningar:
+1. Athugaðu Bilanaleit hlutann hér að ofan
+2. Skoðaðu README og skjöl
+3. Athugaðu browser console (F12) fyrir villur
+4. Endurræstu serverinn og endurnýjaðu síður
+5. Keyrðu testa: `npm test`
+
+## Þróunar Saga
+
+Þetta verkefni hefur gengið í gegnum margar endurbætur:
+- **Phase 1**: Grunnatriði (stigatafla, leikjareglur)
+- **Phase 2**: WebSocket samskipti og rauntíma uppfærslur
+- **Phase 3**: Stjórnborðs UI og flýtilyklar
+- **Phase 4**: Integration testar og kerfisuppfærsla
+- **Phase 5**: Gumma Lilla checkout advice kerfi 🎯
 
 ---
 
-**Enjoy your darts overlay! 🎯**
+**Njóttu þess að nota darts overlay-ið! 🎯**
+
+*Gert með ❤️ fyrir darts aðdáendur*
