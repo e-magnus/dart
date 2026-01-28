@@ -443,12 +443,10 @@ function updateGummiLilliAdvice() {
     const optimalText = document.getElementById('gummi-lilli-optimal');
     
     if (!adviceContainer || !adviceText || !optimalText) {
-        console.log('Gummi Lilli: Elements not found');
         return;
     }
     
     // Check if Gummi Lilli is enabled
-    console.log('Gummi Lilli enabled:', gameState?.gummiLilliEnabled);
     if (!gameState || !gameState.gummiLilliEnabled) {
         adviceContainer.classList.add('hidden');
         return;
@@ -457,18 +455,15 @@ function updateGummiLilliAdvice() {
     // Get active player's score
     const activePlayer = getActivePlayer();
     if (!activePlayer) {
-        console.log('Gummi Lilli: No active player');
         adviceContainer.classList.add('hidden');
         return;
     }
     
     const remainingScore = activePlayer.score;
-    console.log('Gummi Lilli: Score:', remainingScore);
     
     // Get advice from checkoutAdvice.js
     if (typeof getCheckoutAdvice === 'function') {
         const advice = getCheckoutAdvice(remainingScore);
-        console.log('Gummi Lilli: Advice:', advice);
         
         if (advice && advice.advice) {
             adviceText.textContent = advice.advice;
@@ -478,7 +473,6 @@ function updateGummiLilliAdvice() {
             adviceContainer.classList.add('hidden');
         }
     } else {
-        console.log('Gummi Lilli: getCheckoutAdvice function not found');
         adviceContainer.classList.add('hidden');
     }
 }
@@ -640,6 +634,7 @@ function syncInputsWithGameState() {
     const playerCount = gameState.players.length;
     const firstToInput = document.getElementById('first-to-input');
     const playerCountRadios = document.querySelectorAll('input[name="player-count"]');
+    const gummiLilliCheckbox = document.getElementById('gummi-lilli-checkbox');
 
     if (playerCountRadios && playerCountRadios.length > 0) {
         playerCountRadios.forEach(radio => {
@@ -660,6 +655,11 @@ function syncInputsWithGameState() {
     }
 
     if (firstToInput) firstToInput.value = gameState.firstTo;
+    
+    // Sync Gummi Lilli checkbox
+    if (gummiLilliCheckbox) {
+        gummiLilliCheckbox.checked = gameState.gummiLilliEnabled || false;
+    }
 }
 
 /**

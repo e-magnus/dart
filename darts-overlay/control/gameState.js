@@ -109,6 +109,24 @@ function clearRoomIdFromStorage() {
     localStorage.removeItem('darts_roomId');
 }
 
+/**
+ * Save Gummi Lilli setting to localStorage
+ */
+function saveGummiLilliSetting(enabled) {
+    localStorage.setItem('darts_gummiLilli', enabled ? 'true' : 'false');
+    if (gameState) {
+        gameState.gummiLilliEnabled = enabled;
+    }
+}
+
+/**
+ * Load Gummi Lilli setting from localStorage
+ */
+function loadGummiLilliSetting() {
+    const saved = localStorage.getItem('darts_gummiLilli');
+    return saved === 'true';
+}
+
 // ===== CURRENT ROUND STATE MANAGEMENT =====
 
 /**
@@ -222,7 +240,14 @@ function getNextBullUpPlayerIndex() {
  * Update game state from server
  */
 function updateGameState(newState) {
+    // Preserve client-side only settings
+    const gummiLilliEnabled = gameState.gummiLilliEnabled;
+    
     gameState = newState;
+    
+    // Restore client-side settings
+    gameState.gummiLilliEnabled = gummiLilliEnabled;
+    
     ensureRoundHistorySize();
 }
 
@@ -326,6 +351,10 @@ if (typeof module !== 'undefined' && module.exports) {
         initRoomId,
         getWebSocketURL,
         generateRoomId,
+        saveRoomIdToStorage,
+        clearRoomIdFromStorage,
+        saveGummiLilliSetting,
+        loadGummiLilliSetting,
         
         // Current round
         addDartToRound,

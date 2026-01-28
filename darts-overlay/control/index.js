@@ -441,6 +441,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize player name click-to-edit functionality
     initPlayerNameEditing(gameState);
     
+    // Load Gummi Lilli setting from localStorage
+    const gummiLilliSaved = loadGummiLilliSetting();
+    if (gummiLilliSaved) {
+        gameState.gummiLilliEnabled = true;
+    }
+    console.log('Gummi Lilli enabled:', gameState.gummiLilliEnabled);
+    
     // Initial UI update
     updateUI();
     updatePlayerStatusDisplay();

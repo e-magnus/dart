@@ -243,7 +243,7 @@ function handleStartNewGame(playerNames, gameType, firstTo, gummiLilliEnabled = 
     updateRoomIdDisplay();
 
     // Set Gummi Lilli enabled state
-    gameState.gummiLilliEnabled = gummiLilliEnabled;
+    saveGummiLilliSetting(gummiLilliEnabled);
 
     // Send updates to server
     sendResetGameToServer(namesArray.length);
