@@ -488,7 +488,7 @@ function updateGummiLilliAdvice() {
             maeltMed = makeBold(maeltMed);
             
             // Build single-line text (without alternative)
-            const text = `Gumma Lilla mælt með ${maeltMed}`;
+            const text = `Gumma Lilla ráðleggur: ${maeltMed}`;
             
             adviceText.innerHTML = text;
             adviceContainer.classList.remove('hidden');
