@@ -493,7 +493,10 @@ function updateGummiLilliAdvice() {
             adviceText.innerHTML = text;
             adviceContainer.classList.remove('hidden');
         } else {
-            adviceContainer.classList.add('hidden');
+            // No checkout available - show encouragement message
+            const text = `Gumma Lilla ráðlegur þér að skora sem flest stig!`;
+            adviceText.innerHTML = text;
+            adviceContainer.classList.remove('hidden');
         }
     } else {
         adviceContainer.classList.add('hidden');

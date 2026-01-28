@@ -638,12 +638,13 @@ html, body {
 }
 
 .settings-group {
-    margin-bottom: 15px;
+    margin-bottom: 30px;
 }
 
 .settings-group label {
     display: block;
     margin-bottom: 5px;
+    margin-top: 15px;
     font-weight: 600;
 }
 
@@ -709,7 +710,7 @@ html, body {
 .radio-group {
     display: flex;
     gap: 20px;
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
 .radio-label {

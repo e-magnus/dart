@@ -168,18 +168,8 @@ const checkoutAdvice = {
     156: { tegund: "Útgangur", maelt_med: "T20, T20, D18", varaleid: null, athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
     157: { tegund: "Útgangur", maelt_med: "T20, T19, D20", varaleid: "T19, T20, D20", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
     158: { tegund: "Útgangur", maelt_med: "T20, T20, D19", varaleid: "T20, T16, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
-    159: { tegund: "Uppsetning (bogey)", maelt_med: "S20, T13, T20", varaleid: "S19, T17, T19", athugasemd: "Skora 119 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    160: { tegund: "Útgangur", maelt_med: "T20, T20, D20", varaleid: "T20, DB, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
-    161: { tegund: "Útgangur", maelt_med: "T20, T17, DB", varaleid: "T19, T18, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
-    162: { tegund: "Uppsetning (bogey)", maelt_med: "S20, T14, T20", varaleid: "S19, T17, T20", athugasemd: "Skora 122 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    163: { tegund: "Uppsetning (bogey)", maelt_med: "S18, T17, T18", varaleid: "S20, T17, T20", athugasemd: "Skora 123 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    164: { tegund: "Útgangur", maelt_med: "T20, T18, DB", varaleid: "T19, T19, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
-    165: { tegund: "Uppsetning (bogey)", maelt_med: "S20, T17, T18", varaleid: "S19, T18, T20", athugasemd: "Skora 125 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    166: { tegund: "Uppsetning (bogey)", maelt_med: "S18, T17, T19", varaleid: "S20, T18, T20", athugasemd: "Skora 126 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    167: { tegund: "Útgangur", maelt_med: "T20, T19, DB", varaleid: "T19, T20, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
-    168: { tegund: "Uppsetning (bogey)", maelt_med: "S20, T17, T19", varaleid: "S19, T19, T20", athugasemd: "Skora 128 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    169: { tegund: "Uppsetning (bogey)", maelt_med: "S18, T17, T20", varaleid: "S20, T19, T20", athugasemd: "Skora 129 til að skilja eftir 40. Markmið: breyta bogey í þægilegan útgang á næstu umferð." },
-    170: { tegund: "Útgangur", maelt_med: "T20, T20, DB", varaleid: null, athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." }
+    159: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T19, T18", varaleid: "T19, T20, T18", athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    160: { tegund: "Útgangur", maelt_med: "T20, T20, D20", varaleid: null, athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
 };
 
 /**
