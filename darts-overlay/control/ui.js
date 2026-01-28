@@ -469,23 +469,28 @@ function updateGummiLilliAdvice() {
         return notation.replace(/S(\d+)/g, '$1');
     };
     
+    // Helper function to make numbers bold (wrap in <strong> tags)
+    const makeBold = (notation) => {
+        if (!notation) return '';
+        // Match T/D/S followed by numbers, or just numbers, or SB/DB
+        return notation.replace(/(T|D)(\d+)|(\d+)|(SB|DB)/g, (match) => {
+            return `<strong>${match}</strong>`;
+        });
+    };
+    
     // Get advice from checkoutAdvice.js
     if (typeof getCheckoutAdvice === 'function') {
         const advice = getCheckoutAdvice(remainingScore);
         
         if (advice && advice.maelt_med) {
-            // Strip "S" from both main and alternative recommendations
-            const maeltMed = stripSingles(advice.maelt_med);
+            // Strip "S" and make numbers bold
+            let maeltMed = stripSingles(advice.maelt_med);
+            maeltMed = makeBold(maeltMed);
             
-            // Build single-line text
-            let text = `Gumma Lilla mælt með ${maeltMed}`;
+            // Build single-line text (without alternative)
+            const text = `Gumma Lilla mælt með ${maeltMed}`;
             
-            if (advice.varaleid) {
-                const varaleid = stripSingles(advice.varaleid);
-                text += ` eða ${varaleid}`;
-            }
-            
-            adviceText.textContent = text;
+            adviceText.innerHTML = text;
             adviceContainer.classList.remove('hidden');
         } else {
             adviceContainer.classList.add('hidden');
