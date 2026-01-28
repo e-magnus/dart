@@ -467,9 +467,17 @@ function updateGummiLilliAdvice() {
     if (typeof getCheckoutAdvice === 'function') {
         const advice = getCheckoutAdvice(remainingScore);
         
-        if (advice && advice.advice) {
-            adviceText.textContent = advice.advice;
-            optimalText.textContent = `Besta leið: ${advice.optimal}`;
+        if (advice && advice.maelt_med) {
+            // Display main recommendation
+            adviceText.textContent = `Mælt með: ${advice.maelt_med}`;
+            
+            // Display alternative path if available
+            if (advice.varaleid) {
+                optimalText.textContent = `Varaleiðir: ${advice.varaleid}`;
+            } else {
+                optimalText.textContent = '';
+            }
+            
             adviceContainer.classList.remove('hidden');
         } else {
             adviceContainer.classList.add('hidden');
