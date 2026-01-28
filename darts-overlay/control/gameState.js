@@ -17,7 +17,8 @@ let gameState = {
     firstTo: 3,
     startScore: 501,
     gameOver: false,
-    winner: null
+    winner: null,
+    gummiLilliEnabled: false  // Gummi Lilli advice feature
 };
 
 // Current round state

@@ -198,10 +198,12 @@ function attachEventListeners() {
             const playerNames = getPlayerNamesInOrder(playerCount);
             const gameType = document.querySelector('input[name="game-type"]:checked').value;
             const firstTo = parseInt(document.getElementById('first-to-input').value);
+            const gummiLilliEnabled = document.getElementById('gummi-lilli-checkbox')?.checked || false;
 
-            if (handleStartNewGame(playerNames, gameType, firstTo)) {
+            if (handleStartNewGame(playerNames, gameType, firstTo, gummiLilliEnabled)) {
                 closeSettings();
                 updateUI();
+                updateGummiLilliAdvice(); // Update advice display
             }
         });
     }

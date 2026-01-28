@@ -91,6 +91,16 @@
             <span class="avg-value" id="checkout-suggestion">—</span>
         </div>
 
+        <!-- Gummi Lilli Advice -->
+        <div class="gummi-lilli-advice hidden" id="gummi-lilli-advice">
+            <div class="gummi-lilli-header">
+                <span>🎯</span>
+                <span>Gummi Lilli ráðleggur:</span>
+            </div>
+            <div class="gummi-lilli-text" id="gummi-lilli-text">—</div>
+            <div class="gummi-lilli-optimal" id="gummi-lilli-optimal">—</div>
+        </div>
+
         <!-- New Game Modal (Hidden by default) -->
         <div class="settings-section" id="new-game-modal">
             <div class="settings-content">
@@ -142,6 +152,12 @@
                 <div class="settings-group">
                     <label for="first-to-input">Leggir til að vinna:</label>
                     <input type="number" id="first-to-input" value="3" min="1" max="20">
+                </div>
+                <div class="settings-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="gummi-lilli-checkbox">
+                        <span>🎯 Gummi Lilli gefur góð ráð</span>
+                    </label>
                 </div>
                 <div class="button-group button-group-double">
                     <button id="cancel-new-game-btn" class="btn-close">Hætta við</button>
@@ -237,6 +253,9 @@
     </div>
 
     <!-- Modular Control Panel Scripts -->
+    <!-- Checkout Advice -->
+    <script src="/control/checkoutAdvice.js"></script>
+    
     <!-- Game State Management -->
     <script src="/control/gameState.js"></script>
     

@@ -431,6 +431,50 @@ function updateCheckoutSuggestion() {
         suggestEl.textContent = `${currentRoundScore}`;
         suggestEl.style.color = '#000000';
     }
+    
+    // Update Gummi Lilli advice when score changes
+    updateGummiLilliAdvice();
+}
+
+/**
+ * Update Gummi Lilli advice display
+ */
+function updateGummiLilliAdvice() {
+    const adviceContainer = document.getElementById('gummi-lilli-advice');
+    const adviceText = document.getElementById('gummi-lilli-text');
+    const optimalText = document.getElementById('gummi-lilli-optimal');
+    
+    if (!adviceContainer || !adviceText || !optimalText) return;
+    
+    // Check if Gummi Lilli is enabled
+    if (!gameState || !gameState.gummiLilliEnabled) {
+        adviceContainer.classList.add('hidden');
+        return;
+    }
+    
+    // Get active player's score
+    const activePlayer = getActivePlayer();
+    if (!activePlayer) {
+        adviceContainer.classList.add('hidden');
+        return;
+    }
+    
+    const remainingScore = activePlayer.score;
+    
+    // Get advice from checkoutAdvice.js
+    if (typeof getCheckoutAdvice === 'function') {
+        const advice = getCheckoutAdvice(remainingScore);
+        
+        if (advice && advice.advice) {
+            adviceText.textContent = advice.advice;
+            optimalText.textContent = `Besta leið: ${advice.optimal}`;
+            adviceContainer.classList.remove('hidden');
+        } else {
+            adviceContainer.classList.add('hidden');
+        }
+    } else {
+        adviceContainer.classList.add('hidden');
+    }
 }
 
 /**
@@ -832,6 +876,7 @@ if (typeof module !== 'undefined' && module.exports) {
         updateModifierDisplay,
         updateNumberPadDisplay,
         updateCheckoutSuggestion,
+        updateGummiLilliAdvice,
         updatePlayerAverages,
         updateDartTrackerBustStatus,
         updateSpecialButtonAvailability,

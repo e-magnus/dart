@@ -558,6 +558,53 @@ html, body {
     font-family: 'Courier New', monospace;
 }
 
+/* === GUMMI LILLI ADVICE === */
+.gummi-lilli-advice {
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #fff9e6 0%, #ffe9b3 100%);
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-bottom: 2px solid #ffd966;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.gummi-lilli-advice.hidden {
+    display: none;
+}
+
+.gummi-lilli-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #8b4513;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.gummi-lilli-text {
+    color: #333;
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.gummi-lilli-optimal {
+    color: #8b4513;
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
 /* === SETTINGS SECTION === */
 .settings-section {
     display: none;
@@ -630,6 +677,33 @@ html, body {
 .settings-group input[type="checkbox"] {
     width: auto;
     margin-right: 8px;
+}
+
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 6px;
+    background: #f9f9f9;
+    transition: background 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: #f0f0f0;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+.checkbox-label span {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
 }
 
 .radio-group {

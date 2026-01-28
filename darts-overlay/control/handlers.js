@@ -208,7 +208,7 @@ function handleResetGame() {
 /**
  * Handle new game
  */
-function handleStartNewGame(playerNames, gameType, firstTo) {
+function handleStartNewGame(playerNames, gameType, firstTo, gummiLilliEnabled = false) {
     // Handle both old (p1Name, p2Name) and new (array) calling conventions
     let namesArray;
     if (Array.isArray(playerNames)) {
@@ -218,6 +218,7 @@ function handleStartNewGame(playerNames, gameType, firstTo) {
         namesArray = [playerNames, gameType];
         gameType = firstTo;
         firstTo = arguments[3];
+        gummiLilliEnabled = arguments[4] || false;
     }
 
     // Validation
@@ -240,6 +241,9 @@ function handleStartNewGame(playerNames, gameType, firstTo) {
     currentRoomId = generateRoomId();
     saveRoomIdToStorage(currentRoomId);
     updateRoomIdDisplay();
+
+    // Set Gummi Lilli enabled state
+    gameState.gummiLilliEnabled = gummiLilliEnabled;
 
     // Send updates to server
     sendResetGameToServer(namesArray.length);
