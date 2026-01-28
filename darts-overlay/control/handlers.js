@@ -5,18 +5,97 @@
  * Pure functions where possible - return what needs to change
  */
 
+// ===== VALIDATION HELPERS =====
+
+/**
+ * Check if a dart combination is valid in darts
+ * @param {number} value - The number (1-20, 25, 50, or 0 for miss)
+ * @param {number} multiplier - 1 (single), 2 (double), or 3 (triple)
+ * @returns {boolean} - True if valid, false if invalid
+ */
+function isValidDartCombination(value, multiplier) {
+    // 0 (miss) is always valid with any multiplier
+    if (value === 0) {
+        return true;
+    }
+    
+    // Singles (1-20, 25) are always valid
+    if (multiplier === 1) {
+        return value >= 1 && value <= 20 || value === 25 || value === 50;
+    }
+    
+    // Doubles: only D1-D20 are valid (values 1-20 with multiplier 2)
+    // Bull's eye (50) is technically a double of 25, but it's entered as 50 with multiplier 1
+    if (multiplier === 2) {
+        return value >= 1 && value <= 20;
+    }
+    
+    // Triples: only T1-T20 are valid (values 1-20 with multiplier 3)
+    if (multiplier === 3) {
+        return value >= 1 && value <= 20;
+    }
+    
+    return false;
+}
+
+/**
+ * Get error message for invalid dart combination
+ * @param {number} value - The number
+ * @param {number} multiplier - The multiplier
+ * @returns {string} - Error message in Icelandic
+ */
+function getInvalidCombinationMessage(value, multiplier) {
+    if (multiplier === 2) {
+        if (value === 25) {
+            return 'Það er ekki til tvöfaldur 25! Notaðu 50 fyrir bull\'s eye.';
+        }
+        if (value === 50) {
+            return 'Það er ekki til tvöfaldur 50! 50 er bull\'s eye.';
+        }
+        if (value === 0) {
+            return 'Það er ekki til tvöfaldur 0!';
+        }
+        return `Það er ekki til tvöfaldur ${value}! Aðeins 1-20 eru í boði.`;
+    }
+    
+    if (multiplier === 3) {
+        if (value === 25) {
+            return 'Það er ekki til þrefaldur 25!';
+        }
+        if (value === 50) {
+            return 'Það er ekki til þrefaldur 50!';
+        }
+        if (value === 0) {
+            return 'Það er ekki til þrefaldur 0!';
+        }
+        return `Það er ekki til þrefaldur ${value}! Aðeins 1-20 eru í boði.`;
+    }
+    
+    return 'Ólögleg samsetning!';
+}
+
 // Event handler functions
 
 /**
  * Handle number input (1-20, 25, 50)
  */
 function handleNumberInput(value) {
+    // Get current multiplier to validate the combination
+    const multiplier = getCurrentMultiplier();
+    
+    // Validate legal dart combinations
+    if (!isValidDartCombination(value, multiplier)) {
+        const msg = getInvalidCombinationMessage(value, multiplier);
+        showToast(msg);
+        setCurrentMultiplier(1); // Reset multiplier
+        return false;
+    }
+    
     if (gameState && gameState.bullUpPhase) {
         if (getCurrentDartCount() >= 1) {
             return false;
         }
 
-        const multiplier = getCurrentMultiplier();
         addDartToRound(value, multiplier);
         submitRound();
         setCurrentMultiplier(1);
@@ -30,7 +109,6 @@ function handleNumberInput(value) {
     }
 
     // Add dart to state
-    const multiplier = getCurrentMultiplier();
     addDartToRound(value, multiplier);
 
     // Check if we won the leg (exactly 0 with valid finish)
@@ -491,6 +569,10 @@ if (typeof module !== 'undefined' && module.exports) {
         sendBullUpThrowToServer,
         
         // Message handling
-        handleStateUpdate
+        handleStateUpdate,
+        
+        // Validation
+        isValidDartCombination,
+        getInvalidCombinationMessage
     };
 }
