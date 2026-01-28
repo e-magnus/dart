@@ -170,6 +170,16 @@ const checkoutAdvice = {
     158: { tegund: "Útgangur", maelt_med: "T20, T20, D19", varaleid: "T20, T16, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
     159: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T19, T18", varaleid: "T19, T20, T18", athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
     160: { tegund: "Útgangur", maelt_med: "T20, T20, D20", varaleid: null, athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
+    161: { tegund: "Útgangur", maelt_med: "T20, T17, DB", varaleid: "T19, T18, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
+    162: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T20, T18", varaleid: "T19, T19, T20", athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    163: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T19, T20", varaleid: "T19, T20, T20", athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    164: { tegund: "Útgangur", maelt_med: "T20, T18, DB", varaleid: "T19, T19, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
+    165: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T19, T20", varaleid: "T19, T20, T20", athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    166: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T20, T20", varaleid: null, athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    167: { tegund: "Útgangur", maelt_med: "T20, T19, DB", varaleid: "T19, T20, DB", athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." },
+    168: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T20, T20", varaleid: null, athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    169: { tegund: "Uppsetning (bogey)", maelt_med: "T20, T19, T20", varaleid: "T19, T20, T20", athugasemd: "Uppsetning, ekki hægt að klára í þremur köstum." },
+    170: { tegund: "Útgangur", maelt_med: "T20, T20, DB", varaleid: null, athugasemd: "Ljúktu á tvöfaldri (D) eða bull (DB)." }
 };
 
 /**
@@ -183,4 +193,9 @@ function getCheckoutAdvice(score) {
     }
     
     return checkoutAdvice[score] || null;
+}
+
+// Export for testing (Node.js environment)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { getCheckoutAdvice };
 }
