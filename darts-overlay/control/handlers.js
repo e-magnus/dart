@@ -111,6 +111,11 @@ function handleNumberInput(value) {
     // Add dart to state
     addDartToRound(value, multiplier);
 
+    // Update Gummi Lilli advice after each dart
+    if (typeof updateGummiLilliAdvice === 'function') {
+        updateGummiLilliAdvice();
+    }
+
     // Check if we won the leg (exactly 0 with valid finish)
     const activePlayer = getActivePlayer();
     const totalScore = getCurrentRoundScore();

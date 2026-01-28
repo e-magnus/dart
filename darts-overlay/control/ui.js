@@ -459,7 +459,9 @@ function updateGummiLilliAdvice() {
         return;
     }
     
-    const remainingScore = activePlayer.score;
+    // Calculate remaining score after current round
+    const currentRoundScore = typeof getCurrentRoundScore === 'function' ? getCurrentRoundScore() : 0;
+    const remainingScore = activePlayer.score - currentRoundScore;
     
     // Get advice from checkoutAdvice.js
     if (typeof getCheckoutAdvice === 'function') {

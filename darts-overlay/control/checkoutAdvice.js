@@ -149,7 +149,7 @@ const checkoutAdvice = {
     120: { advice: "T20 og 20 og D20!", optimal: "T20, 20, D20" },
     
     // 121-130
-    121: { advice: "T20 og T17 og Bull!", optimal: "T20, T17, Bull" },
+    121: { advice: "T20 og T17 og D5!", optimal: "T20, T17, D5" },
     122: { advice: "T18 og Bull og D20!", optimal: "T18, Bull, D20" },
     123: { advice: "T19 og T16 og D6!", optimal: "T19, T16, D6" },
     124: { advice: "T20 og T14 og D10!", optimal: "T20, T14, D10" },
