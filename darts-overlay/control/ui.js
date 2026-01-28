@@ -463,21 +463,30 @@ function updateGummiLilliAdvice() {
     const currentRoundScore = typeof getCurrentRoundScore === 'function' ? getCurrentRoundScore() : 0;
     const remainingScore = activePlayer.score - currentRoundScore;
     
+    // Helper function to remove "S" prefix from single numbers
+    const stripSingles = (notation) => {
+        if (!notation) return '';
+        // Replace "S" followed by a number with just the number
+        return notation.replace(/S(\d+)/g, '$1');
+    };
+    
     // Get advice from checkoutAdvice.js
     if (typeof getCheckoutAdvice === 'function') {
         const advice = getCheckoutAdvice(remainingScore);
         
         if (advice && advice.maelt_med) {
-            // Display main recommendation
-            adviceText.textContent = `Mælt með: ${advice.maelt_med}`;
+            // Strip "S" from both main and alternative recommendations
+            const maeltMed = stripSingles(advice.maelt_med);
             
-            // Display alternative path if available
+            // Build single-line text
+            let text = `Gumma Lilla mælt með ${maeltMed}`;
+            
             if (advice.varaleid) {
-                optimalText.textContent = `Varaleiðir: ${advice.varaleid}`;
-            } else {
-                optimalText.textContent = '';
+                const varaleid = stripSingles(advice.varaleid);
+                text += ` eða ${varaleid}`;
             }
             
+            adviceText.textContent = text;
             adviceContainer.classList.remove('hidden');
         } else {
             adviceContainer.classList.add('hidden');
