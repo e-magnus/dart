@@ -79,7 +79,7 @@ function handleAddScore(gameState, dartValue) {
   // 2. Call: gameLogic functions for score calculation
   // 3. Mutate: Create new state object (never mutate original)
   // 4. Emit: Events describing what changed
-  
+
   return {
     gameState: newState,
     events: [
@@ -106,11 +106,12 @@ function broadcastEvents(events, roomClients) {
       type: 'stateUpdate',
       event: event.type,
       data: event.data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     roomClients.forEach(client => {
-      if (client.readyState === 1) { // OPEN
+      if (client.readyState === 1) {
+        // OPEN
         client.send(message);
       }
     });
@@ -123,11 +124,13 @@ function broadcastEvents(events, roomClients) {
 ### `score` - Add Dart Score
 
 **Input:**
+
 ```javascript
 { type: 'score', data: { value: 25 } }
 ```
 
 **Processing:**
+
 1. Validate game not over
 2. Get active player
 3. Call `gameLogic.addDartScore(currentScore, dartValue)`
@@ -135,6 +138,7 @@ function broadcastEvents(events, roomClients) {
 5. Update state accordingly
 
 **Events Emitted:**
+
 - `score_added` - Normal score
 - `bust` - Score would go below 0 or equal 1
 - `leg_won` - Exact checkout (0 remaining)
@@ -144,56 +148,73 @@ function broadcastEvents(events, roomClients) {
 ### `switchPlayer` - Toggle Active Player
 
 **Input:**
+
 ```javascript
-{ type: 'switchPlayer' }
+{
+  type: 'switchPlayer';
+}
 ```
 
 **Events Emitted:**
+
 - `player_switched` - Active player toggled
 
 ### `updateName` - Change Player Name
 
 **Input:**
+
 ```javascript
 { type: 'updateName', data: { playerIndex: 0, name: 'Alice' } }
 ```
 
 **Validation:**
+
 - `playerIndex` must be 0 or 1
 - `name` must be string
 
 **Events Emitted:**
+
 - `name_updated` - Player name changed
 
 ### `resetGame` - Reset Game State
 
 **Input:**
+
 ```javascript
-{ type: 'resetGame' }
+{
+  type: 'resetGame';
+}
 ```
 
 **Preserves:**
+
 - Player names
 - Start score (usually 501)
 - First-to setting
 
 **Resets:**
+
 - Legs to 0
 - Scores to start score
 - Game over flag
 - Active player to player 1
 
 **Events Emitted:**
+
 - `game_reset` - Game state reset
 
 ### `ping` - Connection Keepalive
 
 **Input:**
+
 ```javascript
-{ type: 'ping' }
+{
+  type: 'ping';
+}
 ```
 
 **Events Emitted:**
+
 - `pong` - With timestamp
 
 ## State Structure
@@ -214,11 +235,11 @@ function broadcastEvents(events, roomClients) {
     },
     // ... player 2
   ],
-  
+
   // Game Settings
   firstTo: 3,                  // Win match at N legs
   startScore: 501,             // Game starting points
-  
+
   // Game Status
   history: [],                 // Turn history (future)
   gameOver: false,             // Match finished?
@@ -233,18 +254,18 @@ function broadcastEvents(events, roomClients) {
 
 Events describe what happened as a result of processing a message:
 
-| Event | Data | Notes |
-|-------|------|-------|
-| `score_added` | `{ playerIndex, newScore, dartValue }` | Normal score |
-| `bust` | `{ playerIndex, attemptedScore }` | Invalid score, no change |
-| `leg_won` | `{ playerIndex, legs }` | Exact checkout (0) |
-| `next_leg` | `{ activePlayerIndex }` | Reset for next leg |
-| `game_won` | `{ playerIndex }` | Matched required legs |
-| `player_switched` | `{ activePlayerIndex }` | Active player changed |
-| `name_updated` | `{ playerIndex, newName }` | Player name changed |
-| `game_reset` | `{ startScore, firstTo }` | Full reset |
-| `pong` | `{ timestamp }` | Connection alive |
-| `error` | `{ message }` | Invalid input/state |
+| Event             | Data                                   | Notes                    |
+| ----------------- | -------------------------------------- | ------------------------ |
+| `score_added`     | `{ playerIndex, newScore, dartValue }` | Normal score             |
+| `bust`            | `{ playerIndex, attemptedScore }`      | Invalid score, no change |
+| `leg_won`         | `{ playerIndex, legs }`                | Exact checkout (0)       |
+| `next_leg`        | `{ activePlayerIndex }`                | Reset for next leg       |
+| `game_won`        | `{ playerIndex }`                      | Matched required legs    |
+| `player_switched` | `{ activePlayerIndex }`                | Active player changed    |
+| `name_updated`    | `{ playerIndex, newName }`             | Player name changed      |
+| `game_reset`      | `{ startScore, firstTo }`              | Full reset               |
+| `pong`            | `{ timestamp }`                        | Connection alive         |
+| `error`           | `{ message }`                          | Invalid input/state      |
 
 ## Testing Without WebSocket
 
@@ -255,7 +276,7 @@ The pattern allows complete testing of game logic without WebSocket:
 let state = createInitialGameState();
 const { gameState, events } = dispatchMessage(state, {
   type: 'score',
-  data: { value: 100 }
+  data: { value: 100 },
 });
 
 expect(gameState.players[0].score).toBe(401);
@@ -285,16 +306,19 @@ handleRoomMessage(rooms, 'room-1', message, roomClients1);
 ## Best Practices
 
 1. **Never mutate input state** - Always clone before modifying
+
    ```javascript
    const newState = JSON.parse(JSON.stringify(gameState));
    ```
 
 2. **Emit events for all changes** - Clients depend on events
+
    ```javascript
    return { gameState, events: [{ type: '...', data: {...} }] };
    ```
 
 3. **Validate inputs early** - Return error event if invalid
+
    ```javascript
    if (invalid) {
      return { gameState, events: [{ type: 'error', data: '...' }] };
@@ -302,6 +326,7 @@ handleRoomMessage(rooms, 'room-1', message, roomClients1);
    ```
 
 4. **Maintain state consistency** - Handle cascading changes
+
    ```javascript
    // Leg win: reset score AND switch player
    newPlayer.score = newState.startScore;
@@ -319,6 +344,7 @@ handleRoomMessage(rooms, 'room-1', message, roomClients1);
 To add a new action type:
 
 1. **Create handler** in `messageHandlers.js`:
+
    ```javascript
    function handleNewAction(gameState, data) {
      // Validate
@@ -328,6 +354,7 @@ To add a new action type:
    ```
 
 2. **Add case** in `dispatchMessage()`:
+
    ```javascript
    case 'newAction': {
      result = handleNewAction(gameState, data);
@@ -336,6 +363,7 @@ To add a new action type:
    ```
 
 3. **Write tests** in `websocketDispatcher.test.js`:
+
    ```javascript
    it('should handle new action', () => {
      const { gameState, events } = dispatchMessage(initialState, message);
@@ -347,13 +375,14 @@ To add a new action type:
    ```javascript
    module.exports = {
      // ... existing
-     handleNewAction
+     handleNewAction,
    };
    ```
 
 ## Summary
 
 The action/reducer pattern provides:
+
 - ✅ **Pure functions** for all state transitions
 - ✅ **Complete testability** without WebSocket
 - ✅ **Event-driven architecture** for broadcasting

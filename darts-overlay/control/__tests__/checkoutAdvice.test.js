@@ -7,35 +7,35 @@ describe('Gumma Lilla - Checkout Advice System', () => {
     test('returns advice for score 170 (max checkout)', () => {
       const advice = getCheckoutAdvice(170);
       expect(advice).not.toBeNull();
-      expect(advice.tegund).toBe("Útgangur");
-      expect(advice.maelt_med).toBe("T20, T20, DB");
+      expect(advice.tegund).toBe('Útgangur');
+      expect(advice.maelt_med).toBe('T20, T20, DB');
     });
 
     test('returns advice for score 100 (common checkout)', () => {
       const advice = getCheckoutAdvice(100);
       expect(advice).not.toBeNull();
-      expect(advice.tegund).toBe("Útgangur");
-      expect(advice.maelt_med).toBe("T20, D20");
+      expect(advice.tegund).toBe('Útgangur');
+      expect(advice.maelt_med).toBe('T20, D20');
     });
 
     test('returns advice for score 2 (minimum checkout)', () => {
       const advice = getCheckoutAdvice(2);
       expect(advice).not.toBeNull();
-      expect(advice.tegund).toBe("Útgangur");
-      expect(advice.maelt_med).toBe("D1");
+      expect(advice.tegund).toBe('Útgangur');
+      expect(advice.maelt_med).toBe('D1');
     });
 
     test('returns advice for bogey number 159', () => {
       const advice = getCheckoutAdvice(159);
       expect(advice).not.toBeNull();
-      expect(advice.tegund).toBe("Uppsetning (bogey)");
-      expect(advice.athugasemd).toContain("Uppsetning");
+      expect(advice.tegund).toBe('Uppsetning (bogey)');
+      expect(advice.athugasemd).toContain('Uppsetning');
     });
 
     test('returns advice for bogey number 162', () => {
       const advice = getCheckoutAdvice(162);
       expect(advice).not.toBeNull();
-      expect(advice.tegund).toBe("Uppsetning (bogey)");
+      expect(advice.tegund).toBe('Uppsetning (bogey)');
     });
   });
 
@@ -70,16 +70,16 @@ describe('Gumma Lilla - Checkout Advice System', () => {
     test('all valid scores have required fields', () => {
       for (let score = 2; score <= 170; score++) {
         const advice = getCheckoutAdvice(score);
-        
+
         expect(advice).not.toBeNull();
         expect(advice).toHaveProperty('tegund');
         expect(advice).toHaveProperty('maelt_med');
         expect(advice).toHaveProperty('varaleid');
         expect(advice).toHaveProperty('athugasemd');
-        
+
         // tegund should be either "Útgangur" or "Uppsetning (bogey)"
         expect(['Útgangur', 'Uppsetning (bogey)']).toContain(advice.tegund);
-        
+
         // maelt_med should not be empty
         expect(advice.maelt_med).toBeTruthy();
         expect(typeof advice.maelt_med).toBe('string');
@@ -88,20 +88,20 @@ describe('Gumma Lilla - Checkout Advice System', () => {
 
     test('bogey numbers are correctly identified', () => {
       const bogeyNumbers = [159, 162, 163, 165, 166, 168, 169];
-      
+
       bogeyNumbers.forEach(score => {
         const advice = getCheckoutAdvice(score);
-        expect(advice.tegund).toBe("Uppsetning (bogey)");
-        expect(advice.athugasemd).toContain("Uppsetning");
+        expect(advice.tegund).toBe('Uppsetning (bogey)');
+        expect(advice.athugasemd).toContain('Uppsetning');
       });
     });
 
     test('non-bogey numbers have "Útgangur" type', () => {
       const normalCheckouts = [50, 100, 120, 140, 160, 170];
-      
+
       normalCheckouts.forEach(score => {
         const advice = getCheckoutAdvice(score);
-        expect(advice.tegund).toBe("Útgangur");
+        expect(advice.tegund).toBe('Útgangur');
       });
     });
   });
@@ -130,15 +130,15 @@ describe('Gumma Lilla - Checkout Advice System', () => {
 
   describe('Edge cases', () => {
     test('handles all scores 2-170 without gaps', () => {
-      let missingScores = [];
-      
+      const missingScores = [];
+
       for (let score = 2; score <= 170; score++) {
         const advice = getCheckoutAdvice(score);
         if (!advice) {
           missingScores.push(score);
         }
       }
-      
+
       expect(missingScores).toEqual([]);
     });
   });

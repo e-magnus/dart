@@ -11,6 +11,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 ## 📦 DELIVERABLES
 
 ### ✅ Backend (Node.js WebSocket Server)
+
 - [server/server.js](server/server.js) - Complete game logic + WebSocket server
   - Darts 501 game rules
   - 2-player support
@@ -26,13 +27,13 @@ Platform: Windows 11 / macOS / Linux (100% offline)
   - Ready-to-use lookup table
 
 ### ✅ Frontend - OBS Overlay
+
 - [overlay/overlay.html](overlay/overlay.html) - 1920×1080 broadcast-quality overlay
   - Two-player scoreboard
   - Active player indicator
   - Checkout suggestions display
   - Legs won counter
   - Transparent background for OBS
-  
 - [overlay/overlay.css](overlay/overlay.css) - TV-style design
   - Dark green/yellow theme
   - Smooth CSS animations
@@ -40,13 +41,13 @@ Platform: Windows 11 / macOS / Linux (100% offline)
   - Score update animation
   - Active player pulse effect
   - Responsive design
-  
 - [overlay/overlay.js](overlay/overlay.js) - WebSocket client
   - Real-time state updates
   - Auto-reconnect logic
   - Display synchronization
 
 ### ✅ Frontend - Control Panel
+
 - [control/control.html](control/control.html) - Score input interface
   - Quick score buttons (16 options)
   - Manual score input field
@@ -54,13 +55,11 @@ Platform: Windows 11 / macOS / Linux (100% offline)
   - First-to configuration
   - Game reset button
   - Status display
-  
 - [control/control.css](control/control.css) - Modern dark theme
   - Clean, intuitive layout
   - Color-coded buttons
   - Responsive grid design
   - Accessibility support
-  
 - [control/control.js](control/control.js) - Game control logic
   - WebSocket connection handler
   - Keyboard hotkey support
@@ -69,21 +68,21 @@ Platform: Windows 11 / macOS / Linux (100% offline)
   - Undo functionality
 
 ### ✅ Setup & Configuration
+
 - [package.json](package.json) - Dependencies manifest
   - ws library for WebSocket
   - npm scripts for starting
-  
 - [start.bat](start.bat) - Windows launcher
   - One-click startup
   - Automatic dependency installation
   - Server + control panel launch
-  
 - [index.html](index.html) - Landing page
   - Quick access to all interfaces
   - Server status indicator
   - Setup instructions
 
 ### ✅ Documentation
+
 - [README.md](README.md) - Complete feature documentation
   - Installation steps
   - Usage guide
@@ -110,6 +109,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 ## 🎮 FEATURES IMPLEMENTED
 
 ### Game Logic ✅
+
 - ✓ Darts 501 rules
 - ✓ 2-player support
 - ✓ Configurable first-to (1-20 legs)
@@ -121,6 +121,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 - ✓ Undo last throw
 
 ### UI/UX ✅
+
 - ✓ OBS-compatible overlay (1920×1080)
 - ✓ TV-style dark scoreboard
 - ✓ Live player name editing
@@ -133,6 +134,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 - ✓ Quick action buttons
 
 ### Control Panel ✅
+
 - ✓ Score input (0-180)
 - ✓ Quick buttons (16 common scores)
 - ✓ Manual custom input
@@ -143,6 +145,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 - ✓ Current state visualization
 
 ### Backend ✅
+
 - ✓ WebSocket server
 - ✓ Real-time state sync
 - ✓ HTTP file serving
@@ -153,6 +156,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 - ✓ Port 8080 (configurable)
 
 ### Offline/Standalone ✅
+
 - ✓ 100% offline (no cloud)
 - ✓ No external APIs
 - ✓ No authentication needed
@@ -163,6 +167,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 - ✓ No tracking/telemetry
 
 ### Quality ✅
+
 - ✓ Clean, documented code
 - ✓ No console errors
 - ✓ Cross-browser compatible
@@ -177,6 +182,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 ## 🚀 QUICK START
 
 ### Local Machine (Windows)
+
 ```bash
 # 1. Extract darts-overlay/ folder
 # 2. Double-click start.bat
@@ -184,6 +190,7 @@ Platform: Windows 11 / macOS / Linux (100% offline)
 ```
 
 ### GitHub Codespaces / Server
+
 ```bash
 cd darts-overlay
 npm install
@@ -193,11 +200,13 @@ npm start
 ```
 
 ### Access Points
+
 - **Landing Page:** http://localhost:8080
 - **Control Panel:** http://localhost:8080/control/control.html
 - **Overlay:** http://localhost:8080/overlay/overlay.html
 
 ### In OBS
+
 1. Add Browser Source
 2. URL: `http://localhost:8080/overlay/overlay.html`
 3. Size: 1920×1080
@@ -208,12 +217,12 @@ npm start
 
 ## ⌨️ KEYBOARD CONTROLS
 
-| Key | Action |
-|-----|--------|
-| `0`-`9` + `Enter` | Custom score input |
-| `Space` | Switch active player |
-| `U` | Undo last throw |
-| `Click` | Quick score buttons |
+| Key               | Action               |
+| ----------------- | -------------------- |
+| `0`-`9` + `Enter` | Custom score input   |
+| `Space`           | Switch active player |
+| `U`               | Undo last throw      |
+| `Click`           | Quick score buttons  |
 
 ---
 
@@ -270,6 +279,7 @@ darts-overlay/
 ## 🎯 GAME RULES
 
 ### Darts 501
+
 1. **Start:** Both players at 501 points
 2. **Turn:** Throw darts to reduce score
 3. **Bust:** If score < 0 or = 1, turn doesn't count
@@ -278,6 +288,7 @@ darts-overlay/
 6. **Win Match:** First to configured legs (default: 5)
 
 ### Checkout Examples
+
 - **50:** D25 (double 25)
 - **100:** T20 T20 D20
 - **170:** T20 T20 Bull (highest possible)
@@ -294,6 +305,7 @@ darts-overlay/
 - No mobile app (web-based only)
 
 ### Workarounds
+
 - Sound: Can be added via JavaScript audio API
 - History: Server tracks internally, can be exported
 - Stats: Could be added to future version
@@ -343,6 +355,7 @@ darts-overlay/
 ## 📝 CODE QUALITY
 
 ### Backend (server.js)
+
 - ✓ Clear function documentation
 - ✓ Proper error handling
 - ✓ Input validation
@@ -351,6 +364,7 @@ darts-overlay/
 - ✓ No external dependencies except ws
 
 ### Frontend (overlay.js, control.js)
+
 - ✓ Clean DOM manipulation
 - ✓ Event handling separation
 - ✓ Auto-reconnect on disconnect
@@ -359,6 +373,7 @@ darts-overlay/
 - ✓ Accessibility considered
 
 ### Styling (CSS)
+
 - ✓ Modern CSS Grid/Flexbox
 - ✓ CSS animations (no JavaScript animation)
 - ✓ Dark theme consistent
@@ -370,11 +385,13 @@ darts-overlay/
 ## 🎬 EXAMPLE USAGE SCENARIO
 
 **Setup:**
+
 - Server running on http://localhost:8080
 - Control Panel open: http://localhost:8080/control/control.html
 - OBS with Overlay: http://localhost:8080/overlay/overlay.html
 
 **Game Flow:**
+
 1. Enter player names: "John" vs "Jane"
 2. Set first-to: 3 legs
 3. John throws 20 → Score: 481
@@ -404,23 +421,27 @@ darts-overlay/
 ## 📞 SUPPORT & TROUBLESHOOTING
 
 ### Overlay Blank
+
 1. Check server is running
 2. Verify URL is correct
 3. Refresh browser source
 4. Check browser console (F12)
 
 ### Port Already in Use
+
 1. Find process: `netstat -tulpn | grep 8080`
 2. Kill it: `pkill -f "node server"`
 3. Or change PORT in server.js
 
 ### Won't Connect
+
 1. Restart server
 2. Clear browser cache
 3. Check firewall
 4. Verify port 8080 is open
 
 ### Scores Not Syncing
+
 1. Refresh all windows
 2. Restart server
 3. Check WebSocket connection
@@ -432,6 +453,7 @@ darts-overlay/
 MIT License - Free for personal and commercial use
 
 Feel free to:
+
 - Modify the code
 - Redistribute
 - Use commercially
@@ -445,6 +467,7 @@ Feel free to:
 You now have a **production-ready, broadcast-quality darts scoreboard and OBS overlay system** that runs completely offline on Windows 11 (or any OS with Node.js).
 
 The system includes:
+
 - Complete game logic for Darts 501
 - Real-time WebSocket synchronization
 - Beautiful TV-style overlay

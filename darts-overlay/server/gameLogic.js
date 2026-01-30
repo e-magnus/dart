@@ -5,7 +5,9 @@
 
 // Compute player average (points per 3 darts)
 function computeAverage(player) {
-  if (!player || !player.dartsThrown) return 0;
+  if (!player || !player.dartsThrown) {
+    return 0;
+  }
   return (player.totalScored / player.dartsThrown) * 3;
 }
 
@@ -29,7 +31,7 @@ function createInitialGameState(playerCount = 2) {
       isActive: i === 0,
       dartsThrown: 0,
       totalScored: 0,
-      average: 0
+      average: 0,
     });
   }
 
@@ -44,7 +46,7 @@ function createInitialGameState(playerCount = 2) {
     lastLegWinner: null,
     nextLegStartPlayer: 1,
     bullUpPhase: false,
-    bullUpScores: []
+    bullUpScores: [],
   };
 }
 
@@ -64,7 +66,7 @@ function addDartScore(currentScore, dartValue) {
   return {
     newScore,
     isBust: isBust(newScore),
-    isCheckout: isCheckout(newScore)
+    isCheckout: isCheckout(newScore),
   };
 }
 
@@ -75,7 +77,7 @@ function resetPlayerForNextLeg(player, startScore) {
     score: startScore,
     dartsThrown: 0,
     totalScored: 0,
-    average: 0
+    average: 0,
   };
 }
 
@@ -83,21 +85,21 @@ function resetPlayerForNextLeg(player, startScore) {
 function switchActivePlayer(gameState) {
   const newState = {
     ...gameState,
-    players: gameState.players.map(p => ({ ...p }))
+    players: gameState.players.map(p => ({ ...p })),
   };
-  
+
   // Find currently active player
   const currentActiveIndex = newState.players.findIndex(p => p.isActive);
-  
+
   // Deactivate current player
   if (currentActiveIndex !== -1) {
     newState.players[currentActiveIndex].isActive = false;
   }
-  
+
   // Activate next player (circular rotation)
   const nextIndex = (currentActiveIndex + 1) % newState.players.length;
   newState.players[nextIndex].isActive = true;
-  
+
   return newState;
 }
 
@@ -109,5 +111,5 @@ module.exports = {
   isCheckout,
   addDartScore,
   resetPlayerForNextLeg,
-  switchActivePlayer
+  switchActivePlayer,
 };

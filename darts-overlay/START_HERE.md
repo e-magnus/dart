@@ -1,4 +1,5 @@
 # 🎯 DARTS 501 OVERLAY SYSTEM
+
 ## Complete Broadcast-Quality Scoreboard for OBS
 
 **Status:** ✅ **PRODUCTION READY**  
@@ -11,12 +12,14 @@
 ## 🚀 QUICK START (2 minutes)
 
 ### Windows
+
 ```bash
 1. Double-click: start.bat
    Done! Opens server + control panel
 ```
 
 ### macOS / Linux / Codespaces
+
 ```bash
 npm install
 npm start
@@ -29,31 +32,34 @@ npm start
 
 Choose your path:
 
-| New User | Impatient | Developer | Reference |
-|----------|-----------|-----------|-----------|
-| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | [QUICKSTART.md](QUICKSTART.md) | [DELIVERY.md](DELIVERY.md) | [INDEX.md](INDEX.md) |
-| Visual guide + arch | 5-min quick start | Tech details | File listing |
-| ↓ | ↓ | ↓ | ↓ |
-| [SETUP.md](SETUP.md) | [README.md](README.md) | [README.md](README.md) | [README.md](README.md) |
-| Full setup | Full docs | Full docs | Full docs |
+| New User                                   | Impatient                      | Developer                  | Reference              |
+| ------------------------------------------ | ------------------------------ | -------------------------- | ---------------------- |
+| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | [QUICKSTART.md](QUICKSTART.md) | [DELIVERY.md](DELIVERY.md) | [INDEX.md](INDEX.md)   |
+| Visual guide + arch                        | 5-min quick start              | Tech details               | File listing           |
+| ↓                                          | ↓                              | ↓                          | ↓                      |
+| [SETUP.md](SETUP.md)                       | [README.md](README.md)         | [README.md](README.md)     | [README.md](README.md) |
+| Full setup                                 | Full docs                      | Full docs                  | Full docs              |
 
 ---
 
 ## 🎮 WHAT YOU GET
 
 ### ✅ Backend
+
 - **Node.js WebSocket Server** - Real-time game synchronization
 - **Darts 501 Game Logic** - Full rule implementation
 - **HTTP File Server** - Static asset serving
 - **Checkout Suggestions** - Local lookup table (2-170)
 
 ### ✅ Frontend
+
 - **OBS Overlay** - 1920×1080 TV-style scoreboard
 - **Control Panel** - Score input + management
 - **Live Updates** - Real-time WebSocket sync
 - **Smooth Animations** - CSS-based visual effects
 
 ### ✅ Features
+
 - **2-Player Support** - Full competitive scoreboard
 - **Keyboard Hotkeys** - Space (switch), U (undo), 0-9 (input)
 - **Live Names** - Edit player names real-time
@@ -68,7 +74,7 @@ Choose your path:
 
 ```
                     🖥️ YOUR COMPUTER
-                    
+
         ┌─────────────────────────────────┐
         │      NODE.JS SERVER             │
         │      Port: 8080                 │
@@ -92,6 +98,7 @@ Choose your path:
 ## 🎯 GAME RULES
 
 ### Darts 501
+
 - Start: 501 points
 - Goal: Reduce to exactly **0**
 - Bust: Score < 0 or = 1 (turn doesn't count)
@@ -100,6 +107,7 @@ Choose your path:
 - Win Match: First to X legs
 
 ### Example
+
 ```
 John: 501 → throws 20 → 481 remaining
 Jane: 501 → throws 18 → 483 remaining
@@ -114,12 +122,12 @@ John hits 0 exactly → WINS LEG 1
 
 ## ⌨️ KEYBOARD CONTROLS
 
-| Key | Action |
-|-----|--------|
-| **0-9** + **Enter** | Custom score |
-| **Space** | Switch player |
-| **U** | Undo last throw |
-| **Click** | Quick buttons |
+| Key                 | Action          |
+| ------------------- | --------------- |
+| **0-9** + **Enter** | Custom score    |
+| **Space**           | Switch player   |
+| **U**               | Undo last throw |
+| **Click**           | Quick buttons   |
 
 ---
 
@@ -202,19 +210,25 @@ darts-overlay/
 ## 🔧 CUSTOMIZATION
 
 ### Change Server Port
+
 Edit **server.js** line 5:
+
 ```javascript
-const PORT = 8081;  // Change from 8080
+const PORT = 8081; // Change from 8080
 ```
 
 ### Change Overlay Colors
+
 Edit **overlay.css**:
+
 - `#00ff00` → Green
 - `#ffff00` → Yellow
 - Customize as needed
 
 ### Add Custom Checkouts
+
 Edit **checkouts.json**:
+
 ```json
 {
   "100": "T20 T20 D20",
@@ -227,11 +241,13 @@ Edit **checkouts.json**:
 ## 🐛 TROUBLESHOOTING
 
 ### Overlay Blank
+
 1. Restart server: `npm start`
 2. Refresh OBS source
 3. Check browser console (F12)
 
 ### Port Already in Use
+
 ```bash
 # Find process using port 8080
 netstat -tulpn | grep 8080
@@ -243,6 +259,7 @@ pkill -f "node server"
 ```
 
 ### Won't Connect
+
 1. Check firewall (port 8080)
 2. Ensure server is running
 3. Clear browser cache
@@ -285,6 +302,7 @@ See [SETUP.md](SETUP.md) for more troubleshooting.
 ## ✅ VERIFICATION
 
 Everything is ready to use:
+
 - ✅ Server tested & working
 - ✅ WebSocket verified
 - ✅ Game logic implemented

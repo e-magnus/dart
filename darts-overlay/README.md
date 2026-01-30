@@ -5,11 +5,13 @@ Fullkomið, offline darts stigatafla og OBS sendingar-overlay kerfi fyrir samkep
 ## Eiginleikar
 
 ✅ **Útsendingargæði**
+
 - 1920x1080 OBS-samhæft gagnsætt overlay
 - Sjónvarps-stíll dökk stigatafla með grænu/gulu útliti
 - Mjúkar CSS animations (sigur-blikk, stig uppfærslur, leikmaður-vísar)
 
 ✅ **Leikjareglur**
+
 - Darts 501 með stillanlegum "fyrsta-til" (legs)
 - 2-4 leikmanna stuðningur með lifandi nafna breytingum
 - Bust greining (stig < 0 eða = 1)
@@ -17,6 +19,7 @@ Fullkomið, offline darts stigatafla og OBS sendingar-overlay kerfi fyrir samkep
 - Sigur animation þegar leik lýkur
 
 ✅ **Gáfaðir Eiginleikar**
+
 - **Gumma Lilla gefur góð ráð 🎯** - rauntíma checkout tillögur (2-170) frá staðbundinni töflu
 - Lifandi stig uppfærslur í gegnum WebSocket
 - Virkur leikmaður vísar með púls animation
@@ -24,6 +27,7 @@ Fullkomið, offline darts stigatafla og OBS sendingar-overlay kerfi fyrir samkep
 - Handvirk endurstilling
 
 ✅ **Stjórnborð**
+
 - Fljótlegir stiga takkar (0, 3, 6...180)
 - Sérsniðin stiga innsláttur með lyklaborðs stuðningi
 - Flýtilyklar: Tölur (innsláttur), Space (skipta), U (afturkalla), Enter (staðfesta)
@@ -32,6 +36,7 @@ Fullkomið, offline darts stigatafla og OBS sendingar-overlay kerfi fyrir samkep
 - Núverandi leikjastaða sýning
 
 ✅ **100% Offline**
+
 - Engar skýjaþjónustur
 - Engin ytri API eða tengsl
 - Allt keyrir á localhost
@@ -55,12 +60,15 @@ Fullkomið, offline darts stigatafla og OBS sendingar-overlay kerfi fyrir samkep
 ## Fljótleg Byrjun
 
 ### Val 1: Nota Batch File (Windows)
+
 Einfaldlega tvísmelltu á `start.bat` - það mun:
+
 - Ræsa WebSocket serverinn
 - Opna stjórnborðið í vafranum þínum
 - Sýna tengingar leiðbeiningar
 
 ### Val 2: Handvirk Ræsing
+
 ```bash
 npm start
 ```
@@ -70,10 +78,13 @@ npm start
 ## Notkun
 
 ### 1. Ræstu Serverinn
+
 ```bash
 npm start
 ```
+
 Þú ættir að sjá:
+
 ```
 Darts Overlay Server running
   Local:    ws://127.0.0.1:8080
@@ -82,11 +93,13 @@ Press Ctrl+C to stop
 ```
 
 ### 2. Opnaðu Stjórnborðið
+
 Farðu á: `file:///path/to/darts-overlay/control/control.html`
 
 Eða láttu `start.bat` opna það sjálfkrafa.
 
 ### 3. Settu upp OBS Overlay
+
 1. Opnaðu OBS Studio
 2. Í senunni þinni, bættu við **Browser** source:
    - **URL:** `file:///path/to/darts-overlay/overlay/overlay.html`
@@ -99,6 +112,7 @@ Eða láttu `start.bat` opna það sjálfkrafa.
 ## Stjórnborð Leiðarvísir
 
 ### Stiga Innsláttur
+
 - **Fljótlegir takkar:** Smelltu fyrir algeng stig (0, 3, 6, 9... 180)
 - **Handvirkur innsláttur:** Sláðu inn hvaða tölu sem er 0-180, ýttu á Enter
 - **Flýtilyklar:**
@@ -108,15 +122,19 @@ Eða láttu `start.bat` opna það sjálfkrafa.
   - `U`: Afturkalla síðasta kast
 
 ### Leikmaðar Stillingar
+
 - Breyttu nöfnum leikmanna hvenær sem er (uppfærist í rauntíma)
 - Breyttu "Fyrsta Til" gildi (1-20 legs)
 - Endurstilltu allan leik með staðfestingu
 
 ### Staða Sýning
+
 Sýnir núverandi virkan leikmann, stig, legs unnið, og leikjarstöðu.
 
+
 ### Gumma Lilla 🎯
-- Virkjaðu í nýjum leik með því að haka við "Gumma Lilla gefur góð ráð 🎯"
+
+- **Sjálfgefið er slökkt á Gumma Lilla**. Þú þarft að haka við "Gumma Lilla gefur góð ráð 🎯" til að virkja ráðgjöf fyrir hvern nýjan leik.
 - Fær checkout tillögur fyrir stig 2-170
 - Sýnir "Gumma Lilla ráðlegur þér að skora sem flest stig!" þegar engin checkout eru möguleg
 - Uppfærist sjálfkrafa eftir hvert kast
@@ -125,6 +143,7 @@ Sýnir núverandi virkan leikmann, stig, legs unnið, og leikjarstöðu.
 ## Leikjareglur
 
 **Darts 501:**
+
 - Leikmenn byrja með 501 stig
 - Hvert kast dregur frá stigum
 - Fyrsti leikmaðurinn til nákvæmlega 0 vinnur leg-ið
@@ -137,6 +156,7 @@ Sýnir núverandi virkan leikmann, stig, legs unnið, og leikjarstöðu.
 ## Overlay Sýning
 
 OBS overlay-ið sýnir:
+
 - **Nöfn leikmanna** með breytanleg rauntíma nöfn
 - **Núverandi stig** (stig sem eftir eru)
 - **Legs unnið** fyrir hvern leikmann
@@ -146,6 +166,7 @@ OBS overlay-ið sýnir:
 - **Fyrsta-til gildi** í miðju
 
 Litir:
+
 - Grænn (#26d07c) - Aðal
 - Gulur (#ffff00) - Áherslur/tillögur
 - Dökkur bakgrunnur - Sjónvarps-stíll
@@ -182,12 +203,12 @@ darts-overlay/
 
 ## Lyklaborðs Flýtilyklar (Stjórnborð)
 
-| Lykill | Aðgerð |
-|--------|--------|
-| `0`-`9` + `Enter` | Slá inn sérsniðin stig |
-| `Space` | Skipta um virkan leikmann |
-| `U` | Afturkalla síðasta kast |
-| `Enter` | Staðfesta stig |
+| Lykill            | Aðgerð                    |
+| ----------------- | ------------------------- |
+| `0`-`9` + `Enter` | Slá inn sérsniðin stig    |
+| `Space`           | Skipta um virkan leikmann |
+| `U`               | Afturkalla síðasta kast   |
+| `Enter`           | Staðfesta stig            |
 
 ## WebSocket API
 
@@ -196,76 +217,84 @@ Serverinn samskiptar í gegnum WebSocket á port 8080.
 ### Client → Server Skilaboð
 
 **Bæta við Stigum**
+
 ```json
-{ 
-  "type": "score", 
-  "playerIndex": 0, 
-  "value": 60, 
-  "darts": 3 
+{
+  "type": "score",
+  "playerIndex": 0,
+  "value": 60,
+  "darts": 3
 }
 ```
 
 **Skipta um Leikmann**
+
 ```json
 { "type": "switchPlayer" }
 ```
 
 **Afturkalla Síðustu Aðgerð**
+
 ```json
 { "type": "undo" }
 ```
 
 **Endurstilla Leik**
+
 ```json
 { "type": "resetGame" }
 ```
 
 **Uppfæra Nafn Leikmanns**
+
 ```json
-{ 
-  "type": "updateName", 
-  "playerIndex": 0, 
-  "name": "Jón Jónsson" 
+{
+  "type": "updateName",
+  "playerIndex": 0,
+  "name": "Jón Jónsson"
 }
 ```
 
 **Uppfæra Fyrsta-Til**
+
 ```json
-{ 
-  "type": "updateFirstTo", 
-  "value": 5 
+{
+  "type": "updateFirstTo",
+  "value": 5
 }
 ```
 
 **Uppfæra Leiktegund**
+
 ```json
-{ 
-  "type": "updateGameType", 
-  "value": "501" 
+{
+  "type": "updateGameType",
+  "value": "501"
 }
 ```
 
 ### Server → Client Skilaboð
 
 **Staða Uppfærsla**
+
 ```json
 {
   "type": "stateUpdate",
   "data": {
     "players": [
-      { 
-        "name": "Leikmaður 1", 
-        "score": 441, 
-        "legs": 1, 
+      {
+        "name": "Leikmaður 1",
+        "score": 441,
+        "legs": 1,
         "isActive": true,
         "totalScored": 60,
         "dartsThrown": 3,
         "average": 60.0
       },
-      { 
-        "name": "Leikmaður 2", 
-        "score": 501, 
-        "legs": 0, 
+      {
+        "name": "Leikmaður 2",
+        "score": 501,
+        "legs": 0,
         "isActive": false,
         "totalScored": 0,
         "dartsThrown": 0,
@@ -284,25 +313,30 @@ Serverinn samskiptar í gegnum WebSocket á port 8080.
 ## Bilanaleit
 
 **S: Overlay er autt í OBS**
+
 - Gakktu úr skugga um að serverinn sé að keyra: `npm start`
 - Athugaðu browser console í OBS (hægri-smelltu á source → Interact)
 - Staðfestu að URL sé rétt
 - Reyndu að opna overlay.html í venjulegum vafra fyrst
 
 **S: Stjórnborð tengist ekki**
+
 - Ræstu serverinn fyrst: `npm start`
 - Athugaðu að port 8080 sé ekki í notkun
 - Reyndu að opna DevTools console (F12) til að sjá tengingar villur
 
 **S: Stig uppfærast ekki**
+
 - Endurnýjaðu bæði stjórnborð og OBS source
 - Endurræstu serverinn
 
 **S: "Port already in use" villa**
+
 - Annað forrit er að nota port 8080
 - Breyttu PORT í server/server.js í eitthvað annað (t.d., 8081)
 
 **S: Gumma Lilla sýnir ekki ráð**
+
 - Gakktu úr skugga um að checkbox sé hakað við í "Nýr Leikur" modal
 - Endurnýjaðu síðuna og byrjaðu nýjan leik
 - Athugaðu browser console fyrir villur
@@ -317,25 +351,32 @@ Serverinn samskiptar í gegnum WebSocket á port 8080.
 ## Sérsníða
 
 ### Breyta Server Port
+
 Breyttu `server/server.js`:
+
 ```javascript
 const PORT = 8080; // Breyttu þessu
 ```
 
 Uppfærðu síðan WebSocket URLs í:
+
 - `overlay/overlay.js`
 - `control/control.js`
 
 ### Breyta Overlay Litum
+
 Breyttu `overlay/overlay.css` - leitaðu að litum gildum:
+
 - `#26d07c` = Grænn (aðal litur)
 - `#ffff00` = Gulur (áherslur)
 - Aðlagaðu eftir þörfum
 
 ### Breyta Gumma Lilla Ráðum
+
 Breyttu `control/checkoutAdvice.js` til að sérsníða checkout tillögur fyrir hvert stig (2-170).
 
 ### Aðlaga Overlay Stærð
+
 OBS browser source stillingar - breyttu Width/Height
 
 ## Testar
@@ -354,6 +395,7 @@ npm test -- --coverage
 ```
 
 **Test þekja:**
+
 - ✅ **gameLogic.test.js** - Leikjareglur og rökfræði
 - ✅ **messageHandlers.test.js** - Skilaboða handlers
 - ✅ **websocketDispatcher.test.js** - Message routing
@@ -373,6 +415,7 @@ MIT License - Notaðu frjálslega fyrir persónuleg og viðskiptaverkefni
 ## Stuðningur
 
 Fyrir vandamál eða spurningar:
+
 1. Athugaðu Bilanaleit hlutann hér að ofan
 2. Skoðaðu README og skjöl
 3. Athugaðu browser console (F12) fyrir villur
@@ -382,6 +425,7 @@ Fyrir vandamál eða spurningar:
 ## Þróunar Saga
 
 Þetta verkefni hefur gengið í gegnum margar endurbætur:
+
 - **Phase 1**: Grunnatriði (stigatafla, leikjareglur)
 - **Phase 2**: WebSocket samskipti og rauntíma uppfærslur
 - **Phase 3**: Stjórnborðs UI og flýtilyklar
@@ -392,4 +436,4 @@ Fyrir vandamál eða spurningar:
 
 **Njóttu þess að nota darts overlay-ið! 🎯**
 
-*Gert með ❤️ fyrir darts aðdáendur*
+_Gert með ❤️ fyrir darts aðdáendur_

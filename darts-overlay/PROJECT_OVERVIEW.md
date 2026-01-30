@@ -52,6 +52,7 @@ A **complete, production-ready darts scoreboard and OBS broadcast overlay system
 ## 🎮 USER INTERFACES
 
 ### 1️⃣ Landing Page
+
 ```
 http://localhost:8080/
 ┌─────────────────────────────────┐
@@ -67,6 +68,7 @@ http://localhost:8080/
 ```
 
 ### 2️⃣ Control Panel
+
 ```
 http://localhost:8080/control/control.html
 
@@ -92,6 +94,7 @@ Shortcuts:
 ```
 
 ### 3️⃣ Broadcast Overlay (OBS)
+
 ```
 1920×1080 Transparent Background
 
@@ -169,6 +172,7 @@ Real-time Flow:
 ## ⚡ QUICK START PATHS
 
 ### Path 1: Windows Local Machine
+
 ```bash
 1. Extract darts-overlay/ folder
 2. Double-click start.bat
@@ -183,6 +187,7 @@ Real-time Flow:
 ```
 
 ### Path 2: GitHub Codespaces / Server
+
 ```bash
 cd darts-overlay
 npm install
@@ -192,6 +197,7 @@ Open: http://localhost:8080
 ```
 
 ### Path 3: Network (Multiple PCs)
+
 ```bash
 # On Server PC:
 npm start
@@ -215,10 +221,10 @@ http://server-ip:8080
     │ Active: ⦿ John          │
     │ Legs: 0                 │
     └─────────────────────────┘
-    
+
     Input: 20 (clicked button)
     Server calculates: 501 - 20 = 481 ✓ Valid
-    
+
     ┌─────────────────────────┐
     │ Broadcast Update:       │
     │ John: 481, Legs: 0      │ ◄─ Auto-updates in OBS
@@ -232,10 +238,10 @@ http://server-ip:8080
     │ Active: ⦿ Jane          │
     │ Legs: 0                 │
     └─────────────────────────┘
-    
+
     Input: 18
     Server: 501 - 18 = 483 ✓ Valid
-    
+
     ... many throws later ...
 
     John's Turn
@@ -243,21 +249,21 @@ http://server-ip:8080
     │ Score: 2 → ? (2)        │
     │ Suggestion: D1          │
     └─────────────────────────┘
-    
+
     Input: 2 (but can't finish on 1)
     Server: 2 - 2 = 0 ✓ EXACT CHECKOUT!
-    
+
     ┌──────────────────────────────┐
     │ 🎉 JOHN WINS LEG 1! 🎉        │
     │                              │ ◄─ Win animation plays in OBS
     │ [Flashing animation]         │
     └──────────────────────────────┘
-    
+
     Score Reset: John: 501, Jane: 501
     Next Leg: Jane goes first (opponent starts)
-    
+
     ... continue to leg 3 ...
-    
+
     ┌──────────────────────────────┐
     │ 🏆 JOHN WINS MATCH! 🏆       │
     │ First to 3 legs              │
@@ -369,12 +375,12 @@ Scaling:
   Matches:   1 per server
   Clients:   Unlimited (tested 10+)
   Broadcasts: Real-time to all
-  
+
 Browser Performance:
   FPS:       60fps capable
   CPU:       <1% overlay display
   Memory:    ~20MB per client
-  
+
 Server Performance:
   Connections:   100+ concurrent
   Messages/sec:  1000+ (tested)
@@ -386,6 +392,7 @@ Server Performance:
 ## 🎨 VISUAL DESIGN
 
 ### Color Scheme
+
 ```
 Primary:    #00ff00  (Bright Green)    - Player info, active indicator
 Secondary:  #ffff00  (Bright Yellow)   - Highlights, suggestions
@@ -395,6 +402,7 @@ Accent:     #0066ff  (Blue)            - Control panel buttons
 ```
 
 ### Animations
+
 ```
 Active Indicator:      Pulse every 1s (scale 1.0 → 1.1)
 Score Update:          Flash (yellow → green) 0.6s
@@ -405,6 +413,7 @@ Background Float:      Subtle up/down movement
 ```
 
 ### Typography
+
 ```
 Headings:    Arial Bold, 32px, green glow
 Player Names: Arial Bold, 36px, green text-shadow
@@ -458,17 +467,17 @@ You have a **complete, production-ready darts overlay system**:
 ✅ **Performance:** Fast, smooth, stable  
 ✅ **Code Quality:** Clean, documented, maintainable  
 ✅ **Documentation:** Complete setup + quick start guides  
-✅ **Ready to Use:** Works immediately, no configuration needed  
+✅ **Ready to Use:** Works immediately, no configuration needed
 
 **Status: PRODUCTION READY ✅**
 
 ---
 
 **Next Steps:**
+
 1. Double-click `start.bat` (Windows) or run `npm start`
 2. Open http://localhost:8080
 3. Click "Control Panel"
 4. Enter scores and watch the overlay update
 5. Add overlay to OBS
 6. Stream your darts! 🎯
-

@@ -18,7 +18,9 @@ describe('UI flow - bust modal', () => {
     showBustModal(50, 50, 'Þú verð að enda með tvöfaldan eða bull (25/50)!');
 
     expect(document.getElementById('bustPlayerName').textContent).toBe('Leikmaður 1');
-    expect(document.getElementById('bustMessage').textContent).toBe('Þú verð að enda með tvöfaldan eða bull (25/50)!');
+    expect(document.getElementById('bustMessage').textContent).toBe(
+      'Þú verð að enda með tvöfaldan eða bull (25/50)!'
+    );
     expect(document.getElementById('bustModal').classList.contains('show')).toBe(true);
   });
 

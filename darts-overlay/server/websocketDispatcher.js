@@ -5,10 +5,10 @@
  */
 
 const {
-    handleAddScore,
-    handleSwitchPlayer,
-    handleUpdatePlayerName,
-    handleResetGame
+  handleAddScore,
+  handleSwitchPlayer,
+  handleUpdatePlayerName,
+  handleResetGame,
 } = require('./messageHandlers');
 
 /**
@@ -18,52 +18,52 @@ const {
  * @returns {Object} { gameState, events } where events are broadcast-ready
  */
 function dispatchMessage(gameState, message) {
-    if (!gameState || !message) {
-        return { gameState, events: [{ type: 'error', data: 'Invalid message' }] };
+  if (!gameState || !message) {
+    return { gameState, events: [{ type: 'error', data: 'Invalid message' }] };
+  }
+
+  const { type, data } = message;
+  let result = { gameState, events: [] };
+
+  switch (type) {
+    case 'score': {
+      if (!data || typeof data.value !== 'number') {
+        return { gameState, events: [{ type: 'error', data: 'Invalid score value' }] };
+      }
+      result = handleAddScore(gameState, data.value);
+      break;
     }
 
-    const { type, data } = message;
-    let result = { gameState, events: [] };
-
-    switch (type) {
-        case 'score': {
-            if (!data || typeof data.value !== 'number') {
-                return { gameState, events: [{ type: 'error', data: 'Invalid score value' }] };
-            }
-            result = handleAddScore(gameState, data.value);
-            break;
-        }
-
-        case 'switchPlayer': {
-            result = handleSwitchPlayer(gameState);
-            break;
-        }
-
-        case 'updateName': {
-            if (typeof data.playerIndex !== 'number' || typeof data.name !== 'string') {
-                return { gameState, events: [{ type: 'error', data: 'Invalid name update' }] };
-            }
-            result = handleUpdatePlayerName(gameState, data.playerIndex, data.name);
-            break;
-        }
-
-        case 'resetGame': {
-            result = handleResetGame(gameState);
-            break;
-        }
-
-        case 'ping': {
-            // Echo for connection keep-alive
-            result = { gameState, events: [{ type: 'pong', data: { timestamp: Date.now() } }] };
-            break;
-        }
-
-        default: {
-            result = { gameState, events: [{ type: 'error', data: `Unknown message type: ${type}` }] };
-        }
+    case 'switchPlayer': {
+      result = handleSwitchPlayer(gameState);
+      break;
     }
 
-    return result;
+    case 'updateName': {
+      if (typeof data.playerIndex !== 'number' || typeof data.name !== 'string') {
+        return { gameState, events: [{ type: 'error', data: 'Invalid name update' }] };
+      }
+      result = handleUpdatePlayerName(gameState, data.playerIndex, data.name);
+      break;
+    }
+
+    case 'resetGame': {
+      result = handleResetGame(gameState);
+      break;
+    }
+
+    case 'ping': {
+      // Echo for connection keep-alive
+      result = { gameState, events: [{ type: 'pong', data: { timestamp: Date.now() } }] };
+      break;
+    }
+
+    default: {
+      result = { gameState, events: [{ type: 'error', data: `Unknown message type: ${type}` }] };
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -72,22 +72,25 @@ function dispatchMessage(gameState, message) {
  * @param {Map} roomClients - Map of client connections in room
  */
 function broadcastEvents(events, roomClients) {
-    if (!events || !Array.isArray(events)) return;
+  if (!events || !Array.isArray(events)) {
+    return;
+  }
 
-    events.forEach(event => {
-        const message = JSON.stringify({
-            type: 'stateUpdate',
-            event: event.type,
-            data: event.data,
-            timestamp: Date.now()
-        });
-
-        roomClients.forEach(client => {
-            if (client && client.readyState === 1) { // OPEN
-                client.send(message);
-            }
-        });
+  events.forEach(event => {
+    const message = JSON.stringify({
+      type: 'stateUpdate',
+      event: event.type,
+      data: event.data,
+      timestamp: Date.now(),
     });
+
+    roomClients.forEach(client => {
+      if (client && client.readyState === 1) {
+        // OPEN
+        client.send(message);
+      }
+    });
+  });
 }
 
 /**
@@ -99,24 +102,24 @@ function broadcastEvents(events, roomClients) {
  * @returns {Object} { success, gameState, events }
  */
 function handleRoomMessage(rooms, roomId, message, roomClients) {
-    if (!rooms.has(roomId)) {
-        return { success: false, error: 'Room not found' };
-    }
+  if (!rooms.has(roomId)) {
+    return { success: false, error: 'Room not found' };
+  }
 
-    const currentState = rooms.get(roomId);
-    const { gameState, events } = dispatchMessage(currentState, message);
+  const currentState = rooms.get(roomId);
+  const { gameState, events } = dispatchMessage(currentState, message);
 
-    // Update room state
-    rooms.set(roomId, gameState);
+  // Update room state
+  rooms.set(roomId, gameState);
 
-    // Broadcast to all clients
-    broadcastEvents(events, roomClients);
+  // Broadcast to all clients
+  broadcastEvents(events, roomClients);
 
-    return { success: true, gameState, events };
+  return { success: true, gameState, events };
 }
 
 module.exports = {
-    dispatchMessage,
-    broadcastEvents,
-    handleRoomMessage
+  dispatchMessage,
+  broadcastEvents,
+  handleRoomMessage,
 };

@@ -4,7 +4,7 @@ const {
   handleUpdatePlayerName,
   handleResetGame,
   handleBullUpThrow,
-  handleStartBullUp
+  handleStartBullUp,
 } = require('../messageHandlers');
 const { createInitialGameState } = require('../gameLogic');
 
@@ -25,21 +25,30 @@ describe('Message Handlers', () => {
     });
 
     it('should handle bust (score < 0)', () => {
-      const state = { ...initialState, players: [{ ...initialState.players[0], score: 10 }, initialState.players[1]] };
+      const state = {
+        ...initialState,
+        players: [{ ...initialState.players[0], score: 10 }, initialState.players[1]],
+      };
       const { gameState, events } = handleAddScore(state, 20);
       expect(gameState.players[0].score).toBe(10); // No change
       expect(events[0].type).toBe('bust');
     });
 
     it('should handle bust (score = 1)', () => {
-      const state = { ...initialState, players: [{ ...initialState.players[0], score: 3 }, initialState.players[1]] };
+      const state = {
+        ...initialState,
+        players: [{ ...initialState.players[0], score: 3 }, initialState.players[1]],
+      };
       const { gameState, events } = handleAddScore(state, 2);
       expect(gameState.players[0].score).toBe(3); // No change
       expect(events[0].type).toBe('bust');
     });
 
     it('should detect leg win on exact checkout', () => {
-      const state = { ...initialState, players: [{ ...initialState.players[0], score: 50 }, initialState.players[1]] };
+      const state = {
+        ...initialState,
+        players: [{ ...initialState.players[0], score: 50 }, initialState.players[1]],
+      };
       const { gameState, events } = handleAddScore(state, 50);
       expect(gameState.players[0].score).toBe(501); // Reset for next leg
       expect(gameState.players[0].legs).toBe(1);
@@ -51,7 +60,7 @@ describe('Message Handlers', () => {
       const state = {
         ...initialState,
         firstTo: 1,
-        players: [{ ...initialState.players[0], score: 50, legs: 0 }, initialState.players[1]]
+        players: [{ ...initialState.players[0], score: 50, legs: 0 }, initialState.players[1]],
       };
       const { gameState, events } = handleAddScore(state, 50);
       expect(gameState.gameOver).toBe(true);
@@ -67,7 +76,10 @@ describe('Message Handlers', () => {
     });
 
     it('should switch player after leg win', () => {
-      const state = { ...initialState, players: [{ ...initialState.players[0], score: 50 }, initialState.players[1]] };
+      const state = {
+        ...initialState,
+        players: [{ ...initialState.players[0], score: 50 }, initialState.players[1]],
+      };
       const { gameState } = handleAddScore(state, 50);
       expect(gameState.players[0].isActive).toBe(false);
       expect(gameState.players[1].isActive).toBe(true);
@@ -139,8 +151,8 @@ describe('Message Handlers', () => {
         ...initialState,
         players: [
           { ...initialState.players[0], score: 100, legs: 2 },
-          { ...initialState.players[1], score: 50, legs: 1 }
-        ]
+          { ...initialState.players[1], score: 50, legs: 1 },
+        ],
       };
       const { gameState } = handleResetGame(state);
       expect(gameState.players[0].score).toBe(501);
@@ -168,8 +180,8 @@ describe('Message Handlers', () => {
         ...initialState,
         players: [
           { ...initialState.players[0], name: 'Alice' },
-          { ...initialState.players[1], name: 'Bob' }
-        ]
+          { ...initialState.players[1], name: 'Bob' },
+        ],
       };
       const { gameState } = handleResetGame(state);
       expect(gameState.players[0].name).toBe('Alice');

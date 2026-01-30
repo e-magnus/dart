@@ -14,24 +14,25 @@
 
 ### 📁 Root Directory
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| **package.json** | Dependencies manifest | 20 |
-| **package-lock.json** | Locked versions | auto |
-| **start.bat** | Windows launcher | 50 |
-| **.gitignore** | Git exclusions | 10 |
-| **index.html** | Landing page (home) | 120 |
+| File                  | Purpose               | Lines |
+| --------------------- | --------------------- | ----- |
+| **package.json**      | Dependencies manifest | 20    |
+| **package-lock.json** | Locked versions       | auto  |
+| **start.bat**         | Windows launcher      | 50    |
+| **.gitignore**        | Git exclusions        | 10    |
+| **index.html**        | Landing page (home)   | 120   |
 
 ---
 
 ### 🖥️ Server Directory (`/server/`)
 
-| File | Purpose | Lines | Description |
-|------|---------|-------|-------------|
-| **server.js** | Main backend | ~200 | WebSocket server, game logic, HTTP file serving |
-| **checkouts.json** | Checkout table | ~170 | All valid finishes from 2-170 points |
+| File               | Purpose        | Lines | Description                                     |
+| ------------------ | -------------- | ----- | ----------------------------------------------- |
+| **server.js**      | Main backend   | ~200  | WebSocket server, game logic, HTTP file serving |
+| **checkouts.json** | Checkout table | ~170  | All valid finishes from 2-170 points            |
 
 #### server.js Sections:
+
 - WebSocket setup & client management
 - Game state initialization & management
 - Game logic (scoring, bust detection, checkouts)
@@ -41,6 +42,7 @@
 - Error handling & reconnect support
 
 #### checkouts.json Format:
+
 ```json
 {
   "50": "D25",
@@ -48,6 +50,7 @@
   "170": "T20 T20 Bull"
 }
 ```
+
 - Keys: Score values (2-170)
 - Values: Valid checkout sequences
 - Used for suggestions when score ≤ 170
@@ -56,13 +59,14 @@
 
 ### 📺 Overlay Directory (`/overlay/`)
 
-| File | Purpose | Lines | Description |
-|------|---------|-------|-------------|
-| **overlay.html** | OBS browser source | ~50 | 1920×1080 scoreboard HTML structure |
-| **overlay.css** | Styling & animations | ~300 | TV-style design, transitions, animations |
-| **overlay.js** | WebSocket client | ~100 | Connects to server, updates display |
+| File             | Purpose              | Lines | Description                              |
+| ---------------- | -------------------- | ----- | ---------------------------------------- |
+| **overlay.html** | OBS browser source   | ~50   | 1920×1080 scoreboard HTML structure      |
+| **overlay.css**  | Styling & animations | ~300  | TV-style design, transitions, animations |
+| **overlay.js**   | WebSocket client     | ~100  | Connects to server, updates display      |
 
 #### overlay.html Structure:
+
 - Overlay container (1920×1080)
 - Two player cards (dark, green borders)
 - VS divider with "First to X" display
@@ -71,6 +75,7 @@
 - Checkout suggestion display
 
 #### overlay.css Highlights:
+
 - Grid layout (two columns + center)
 - Green (#00ff00) + yellow (#ffff00) colors
 - Pulse animation for active player
@@ -80,6 +85,7 @@
 - Responsive design
 
 #### overlay.js Functions:
+
 - `initWebSocket()` - Connect to server
 - `updateGameState()` - Handle state updates
 - `updateScoreDisplay()` - Animate score changes
@@ -91,13 +97,14 @@
 
 ### 🎮 Control Directory (`/control/`)
 
-| File | Purpose | Lines | Description |
-|------|---------|-------|-------------|
-| **control.html** | Control panel UI | ~80 | Score buttons, inputs, settings |
-| **control.css** | Styling | ~400 | Dark theme, buttons, grid layout |
-| **control.js** | Event handling | ~200 | Keyboard input, score submission |
+| File             | Purpose          | Lines | Description                      |
+| ---------------- | ---------------- | ----- | -------------------------------- |
+| **control.html** | Control panel UI | ~80   | Score buttons, inputs, settings  |
+| **control.css**  | Styling          | ~400  | Dark theme, buttons, grid layout |
+| **control.js**   | Event handling   | ~200  | Keyboard input, score submission |
 
 #### control.html Sections:
+
 - Player settings (names, first-to, reset)
 - Score quick buttons (16 options)
 - Manual score input field
@@ -106,6 +113,7 @@
 - Instructions & shortcuts
 
 #### control.css Highlights:
+
 - Grid layout for buttons
 - Green (#00ff00) primary color
 - Blue controls, orange switches, red reset
@@ -114,6 +122,7 @@
 - Keyboard shortcut indicators
 
 #### control.js Functions:
+
 - `initWebSocket()` - Connect to server
 - `updateLocalState()` - Receive game state
 - `updateUI()` - Render current state
@@ -127,20 +136,21 @@
 
 ### 📖 Documentation Files
 
-| File | Purpose | Lines | Audience |
-|------|---------|-------|----------|
-| **README.md** | Full documentation | ~300 | Everyone |
-| **SETUP.md** | Installation guide | ~400 | New users |
-| **QUICKSTART.md** | Quick reference | ~350 | Impatient users |
-| **DELIVERY.md** | Project summary | ~400 | Developers |
-| **PROJECT_OVERVIEW.md** | Visual guide | ~400 | Visual learners |
-| **INDEX.md** | This file | - | File reference |
+| File                    | Purpose            | Lines | Audience        |
+| ----------------------- | ------------------ | ----- | --------------- |
+| **README.md**           | Full documentation | ~300  | Everyone        |
+| **SETUP.md**            | Installation guide | ~400  | New users       |
+| **QUICKSTART.md**       | Quick reference    | ~350  | Impatient users |
+| **DELIVERY.md**         | Project summary    | ~400  | Developers      |
+| **PROJECT_OVERVIEW.md** | Visual guide       | ~400  | Visual learners |
+| **INDEX.md**            | This file          | -     | File reference  |
 
 ---
 
 ## 🔍 FILE PURPOSES SUMMARY
 
 ### Critical Files (Required)
+
 1. **server.js** - Must run for anything to work
 2. **checkouts.json** - Must exist for checkout suggestions
 3. **overlay.html + .js** - Required for OBS display
@@ -148,33 +158,35 @@
 5. **package.json** - Required for dependencies
 
 ### Important Files (Recommended)
+
 6. **overlay.css** - Makes overlay look good
 7. **control.css** - Makes control panel usable
 8. **index.html** - Nice landing page
 9. **start.bat** - Easy Windows startup
 
 ### Reference Files (Documentation)
+
 10-14. All .md files - Help for setup and troubleshooting
 
 ---
 
 ## 💾 FILE SIZES
 
-| File | Size |
-|------|------|
-| server.js | ~8 KB |
-| overlay.html | ~2 KB |
-| overlay.css | ~12 KB |
-| overlay.js | ~4 KB |
-| control.html | ~3 KB |
-| control.css | ~16 KB |
-| control.js | ~8 KB |
-| index.html | ~5 KB |
-| checkouts.json | ~8 KB |
-| package.json | ~0.5 KB |
-| **TOTAL (code)** | **~66 KB** |
-| **TOTAL (with docs)** | **~200 KB** |
-| **TOTAL (with node_modules)** | **~70 MB** |
+| File                          | Size        |
+| ----------------------------- | ----------- |
+| server.js                     | ~8 KB       |
+| overlay.html                  | ~2 KB       |
+| overlay.css                   | ~12 KB      |
+| overlay.js                    | ~4 KB       |
+| control.html                  | ~3 KB       |
+| control.css                   | ~16 KB      |
+| control.js                    | ~8 KB       |
+| index.html                    | ~5 KB       |
+| checkouts.json                | ~8 KB       |
+| package.json                  | ~0.5 KB     |
+| **TOTAL (code)**              | **~66 KB**  |
+| **TOTAL (with docs)**         | **~200 KB** |
+| **TOTAL (with node_modules)** | **~70 MB**  |
 
 ---
 
@@ -197,7 +209,7 @@ Frontend:
 
 Data:
   - checkouts.json:      ~170 entries
-  
+
 Documentation:
   - README.md:           ~300 lines
   - SETUP.md:            ~400 lines
@@ -216,6 +228,7 @@ Total Project:           ~3,300 lines
 ## 🎯 NAVIGATION GUIDE
 
 ### For First-Time Users
+
 ```
 1. Read: PROJECT_OVERVIEW.md (5 min)
    ↓
@@ -229,6 +242,7 @@ Total Project:           ~3,300 lines
 ```
 
 ### For Installation Issues
+
 ```
 1. Check: SETUP.md (troubleshooting section)
    ↓
@@ -240,6 +254,7 @@ Total Project:           ~3,300 lines
 ```
 
 ### For Configuration
+
 ```
 1. Read: SETUP.md (advanced usage)
    ↓
@@ -251,6 +266,7 @@ Total Project:           ~3,300 lines
 ```
 
 ### For Understanding Code
+
 ```
 1. Read: PROJECT_OVERVIEW.md (architecture)
    ↓
@@ -264,6 +280,7 @@ Total Project:           ~3,300 lines
 ```
 
 ### For Extending Features
+
 ```
 1. Understand: server.js structure
    ↓
@@ -283,24 +300,31 @@ Total Project:           ~3,300 lines
 ## 🔧 EDITING QUICK REFERENCE
 
 ### Change Server Port
+
 Edit **server.js** line 5:
+
 ```javascript
 const PORT = 8081; // Change from 8080
 ```
 
 Then update in **overlay.js** and **control.js**:
+
 ```javascript
-'ws://localhost:8081'  // Update both files
+'ws://localhost:8081'; // Update both files
 ```
 
 ### Change Colors
+
 Edit **overlay.css** - replace colors:
+
 - `#00ff00` → New green color
 - `#ffff00` → New yellow color
 - `rgba(20, 20, 40, 0.95)` → New background
 
 ### Add Checkouts
+
 Edit **checkouts.json**:
+
 ```json
 {
   "150": "T20 T16 D12",
@@ -309,12 +333,15 @@ Edit **checkouts.json**:
 ```
 
 ### Customize Button Scores
+
 Edit **control.html** quick buttons section:
+
 ```html
 <button class="btn btn-score" data-score="50">50</button>
 ```
 
 ### Add New Game Command
+
 1. Edit **server.js** - add message handler
 2. Edit **control.js** or **overlay.js** - send message
 3. Restart server & refresh browser
@@ -384,24 +411,28 @@ Before sharing/deploying:
 ## 📞 FILE-SPECIFIC HELP
 
 ### server.js Issues
+
 - Port already in use → Change PORT constant
 - WebSocket errors → Check network firewall
 - Game logic bugs → Review logic functions
 - See: DELIVERY.md + README.md
 
 ### Overlay Issues
+
 - Blank display → Check URL + refresh
 - Wrong colors → Edit overlay.css
 - Animations not working → Check CSS
 - See: SETUP.md + PROJECT_OVERVIEW.md
 
 ### Control Panel Issues
+
 - Buttons not working → Check control.js
 - Keyboard not responding → Edit event handlers
 - Score not syncing → Check WebSocket
 - See: SETUP.md + QUICKSTART.md
 
 ### General Issues
+
 - Won't start → Try npm install
 - Connection fails → Check firewall + port
 - Data not syncing → Restart server
@@ -426,4 +457,3 @@ Before sharing/deploying:
 **Last Updated:** January 24, 2026  
 **Version:** 1.0.0  
 **Status:** Complete & Tested ✅
-

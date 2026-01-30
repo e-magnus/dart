@@ -3,6 +3,7 @@
 ## ⚡ Quick Start (5 minutes)
 
 ### Prerequisites
+
 - Windows 11 (or Windows 10, macOS, Linux)
 - Node.js installed (download from https://nodejs.org/)
 
@@ -15,9 +16,11 @@
    - OR: Win+R → `cmd` → navigate to folder
 
 3. **Install dependencies:**
+
    ```
    npm install
    ```
+
    This will download the WebSocket library (one-time only)
 
 4. **Start the system:**
@@ -25,6 +28,7 @@
    - **Option B (Manual):** Run `npm start`
 
 5. **You should see:**
+
    ```
    Darts Overlay Server running at ws://127.0.0.1:8080
    ```
@@ -35,6 +39,7 @@
 ## 🎮 Using the Control Panel
 
 ### Basic Workflow
+
 1. Enter player names (optional, defaults to "Player 1" & "Player 2")
 2. Set "First To" value (default 5 legs)
 3. Click score buttons or type score and press Enter
@@ -42,12 +47,14 @@
 5. Overlay displays live in OBS
 
 ### Keyboard Shortcuts
+
 - **Numbers + Enter:** Input custom score (0-180)
 - **Space:** Switch active player
 - **U:** Undo last throw
 - **Click buttons:** Quick scores
 
 ### Available Quick Scores
+
 - Singles: 0, 3, 6, 9, 12, 15, 18, 20
 - Doubles: 6, 9, 12, 15, 18, 20, 25, 30
 - High: 40, 50, 60, 100, 120, 180
@@ -87,6 +94,7 @@
 ## 🎯 Game Rules
 
 ### Darts 501
+
 - **Start:** Both players at 501 points
 - **Goal:** Reduce score to exactly 0
 - **Throw:** Each dart reduces score
@@ -100,6 +108,7 @@
 - **Win Match:** First to configured legs (default 5)
 
 ### Checkout Examples (All Valid)
+
 - **100:** T20 T20 D20 (or just D50)
 - **170:** T20 T20 Bull (highest possible)
 - **65:** 25 D20 (or T5 D20)
@@ -109,17 +118,21 @@
 ## 🔧 Troubleshooting
 
 ### Server won't start
+
 **Error:** "Port already in use"
+
 - Another app is using port 8080
 - Close Chrome DevTools, Discord, or other apps
 - Wait 30 seconds and try again
 
 **Error:** "Node.js not found"
+
 - Download Node.js from https://nodejs.org/
 - Install it (defaults are fine)
 - Restart your computer
 
 ### Overlay blank in OBS
+
 1. Check server is running (black window visible)
 2. In OBS, right-click the browser source → Filters
 3. Check browser console for errors
@@ -127,17 +140,20 @@
 5. Refresh browser source (right-click → Refresh)
 
 ### Control panel won't connect
+
 - Make sure server is running first
 - Open DevTools (F12) → Console tab
 - Look for red error messages
 - Try `http://localhost:8080` in browser to test connection
 
 ### Scores not updating in overlay
+
 - Refresh OBS browser source (right-click → Refresh)
 - Make sure control panel and overlay are both running
 - Check WebSocket connection (DevTools → Network)
 
 ### Game crashes or won't respond
+
 - Close all windows
 - Run `npm start` again
 - Refresh control panel and OBS browser source
@@ -166,7 +182,9 @@ darts-overlay/
 ## 🚀 Advanced Usage
 
 ### Custom Checkout Table
+
 Edit `server/checkouts.json` to add more checkouts:
+
 ```json
 {
   "50": "D25",
@@ -176,23 +194,29 @@ Edit `server/checkouts.json` to add more checkouts:
 ```
 
 ### Change Server Port
+
 Edit `server/server.js` line 5:
+
 ```javascript
 const PORT = 8081; // Change from 8080 to 8081
 ```
 
 Then update WebSocket URLs in:
+
 - `overlay/overlay.js` line 1
 - `control/control.js` line 1
-Change `8080` to `8081`
+  Change `8080` to `8081`
 
 ### Customize Overlay Colors
+
 Edit `overlay/overlay.css` - main colors:
+
 - `#00ff00` = Green (primary)
 - `#ffff00` = Yellow (highlights)
 - `rgba(20, 20, 40, 0.95)` = Dark background
 
 ### Run on Different Machine
+
 1. Ensure both machines are on same network
 2. Edit server URLs to use machine's IP:
    - Find your IP: `ipconfig` in Command Prompt
@@ -210,6 +234,7 @@ Edit `overlay/overlay.css` - main colors:
 ## 🎓 Learning the Code
 
 ### Server Architecture (`server.js`)
+
 - HTTP server listens on port 8080
 - WebSocket upgrade for real-time updates
 - Game state object stores players/scores
@@ -217,11 +242,13 @@ Edit `overlay/overlay.css` - main colors:
 - Broadcast function sends state to all clients
 
 ### WebSocket Protocol
+
 - Client sends: `{type: "score", playerIndex: 0, value: 20}`
 - Server responds: `{type: "stateUpdate", data: {...}}`
 - All communication is JSON
 
 ### Frontend Synchronization
+
 - Overlay: Listens only (receive state)
 - Control: Sends commands (get+send)
 - Both receive state updates instantly
@@ -252,11 +279,13 @@ A: YES! Same instructions, no Windows-specific code. Use start script instead of
 ## 🎬 Example Game
 
 **Setup:**
+
 - Player 1: "John"
 - Player 2: "Jane"
 - First to: 3 legs
 
 **Game flow:**
+
 1. John throws, score 20 → 481 remaining
 2. Jane throws, score 18 → 483 remaining
 3. ... continue ...

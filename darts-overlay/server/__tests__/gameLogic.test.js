@@ -6,7 +6,7 @@ const {
   isCheckout,
   addDartScore,
   resetPlayerForNextLeg,
-  switchActivePlayer
+  switchActivePlayer,
 } = require('../gameLogic');
 
 describe('Game Logic', () => {
@@ -23,7 +23,7 @@ describe('Game Logic', () => {
     });
 
     it('should handle decimal averages', () => {
-      const player = { dartsThrown: 6, totalScored: 40 }; 
+      const player = { dartsThrown: 6, totalScored: 40 };
       // 40 / 6 * 3 = 20
       expect(computeAverage(player)).toBeCloseTo(20, 1);
     });
@@ -97,7 +97,7 @@ describe('Game Logic', () => {
         legs: 1,
         dartsThrown: 30,
         totalScored: 450,
-        average: 45
+        average: 45,
       };
       const reset = resetPlayerForNextLeg(player, 501);
       expect(reset.score).toBe(501);
