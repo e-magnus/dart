@@ -305,7 +305,7 @@ function enablePlayerOrderDragAndDrop(list) {
     if (!draggedItem) {
       return;
     }
-    if (afterElement == null) {
+    if (afterElement === null) {
       list.appendChild(draggedItem);
     } else {
       list.insertBefore(draggedItem, afterElement);
@@ -458,7 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize player name click-to-edit functionality
   initPlayerNameEditing(gameState);
-
 
   // Gummi Lilli is OFF by default (do not auto-enable from localStorage)
   gameState.gummiLilliEnabled = false;
